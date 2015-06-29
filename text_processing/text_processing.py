@@ -3,7 +3,7 @@
 
 # Nico Colic, June 2015
 
-import nltk
+from nltk.tokenize import WordPunctTokenizer, PunktSentenceTokenizer
 
 class Text_processing(object):
 	"""Allows to do tokenisation and PoS tagging on a given text"""
@@ -29,20 +29,22 @@ class Text_processing(object):
 		self.tokens = []
 		self.sentences = []
 		self.tagged = []
-		self.tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+		
+		# It is imperative that you use the same tokenizers here as you use for tokenizing the NEs when loading from file in the ER module
+		self.sentence_tokenizer = PunktSentenceTokenizer()
+		self.word_tokenizer = WordPunctTokenizer()
 	
 	def tokenize_sentences(self):
-		self.sentences = nltk.sent_tokenize(self.text)
+		self.sentences = self.sentence_tokenizer.tokenize(self.text)
 		
 	def tokenize_words(self):
 		if not self.sentences:
 			self.tokenize_sentences()
 		
 		for sentence in self.sentences:
-			# and here we also need to mark the position
-			# span tokenize might be what I want
-			print(self.tokenizer.span_tokenize(self.text))
-			# self.tokens.extend(nltk.span_tokenize(self.text))
+			for token in self.word_tokenizer.span_tokenize(sentence):
+				# save actual token together with it's positions
+				self.tokens.append((self.text[token[0]:token[1]],token[0],token[1]))
 			
 	def pos_tag(self):
 		for sentence in self.tokens:

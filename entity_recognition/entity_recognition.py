@@ -4,7 +4,7 @@
 # Nico Colic, June 2015
 
 import csv
-import nltk
+from nltk.tokenize import WordPunctTokenizer
 import time
 import pickle
 import os.path
@@ -16,6 +16,7 @@ class Entity_recognition(object):
 	
 	"""Structure of terms: key = first word of term, [0] = whole term , [1] = term_id , [2] = term_type , [3] = term_preferred_form, [4] = number of tokens of term"""
 	"""Structure of returned entities: key = id, [0] = whole term, [1] - [4] like terms, [5] = start position, [6] = end position"""
+	"""Structure of words (supplied to find NEs in): [0]: token, [1]: start position in text, [2]: end position in text"""
 	
 	default_termlist = 'ctd.csv'
 	terms = dict()
@@ -74,7 +75,9 @@ class Entity_recognition(object):
 			for line in csv.reader(tsv, delimiter="\t"):
 								
 				term_id = line[0]
-				term = nltk.word_tokenize(line[1])
+				
+				# This needs to be the same tokenizer as is used in the text processing module
+				term = WordPunctTokenizer().tokenize(line[1])
 				term_type = line[2]
 				term_preferred_form = line[3]
 				
@@ -97,7 +100,8 @@ class Entity_recognition(object):
 	
 	def recognise_entities(self,words,terms=None):
 		"""Will go through the words and try to match them to the terms"""
-		"""Returnss a list of found entities"""
+		"""Words is expected in this format: (word, start position, end position)"""
+		"""Returns a list of found entities"""
 		
 		entities = list()
 		
@@ -105,17 +109,16 @@ class Entity_recognition(object):
 			terms = self.terms
 		
 		entity_id = -1
-		start_position = 0
 		
 		# using a C-style loop for easy peeking at words following the current one
 		for i in range(len(words)):
-			word = words[i]
+			
+			word = words[i][0]
 			if word in terms:
 								
 				entity_id = entity_id + 1
 				
 				# check if multiple entries for first word in terms
-				# This code fragment is sponsored by yiwu pu erh
 				for entry in terms[word]:
 										
 					# remember, entry[4] is the number of words the NE has
@@ -128,20 +131,19 @@ class Entity_recognition(object):
 						for j in range(len(entry[0])):
 							if not matched:
 								break
-							if matched and i+j < len(words) and entry[0][j] != words[i+j]:
+							if matched and i+j < len(words) and entry[0][j] != words[i+j][0]:
 								matched = False
 							else:
 								match_length = match_length + len(entry[0][j])
 								# TODO: like this we have an inefficiency because we check for all the entries, even though we could save ourselves some work if they we're structured like a tree
 						
 						if matched:
-							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , start_position , start_position + match_length ) )
-							start_position = start_position + match_length
+							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i+j][2]))
 							# TODO: one could also set i to skip the words so far identified as a multi-word entry. But this might lead to some nested / parallel multi-word NEs to be missed
-						
+					
 					else:
-						entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , start_position , start_position + len(word) ) )
-						start_position = start_position + len(word)
+					# else it's a single word NE that was found	
+						entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i][2] ) )
 		
 		return entities
 		

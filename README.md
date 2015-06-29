@@ -43,3 +43,18 @@ CREDITS
 =======
 Nico Colic
 ncolic@gmail.com
+
+STREAM OF CONSCIOUSNESS
+=======================
+
+Okay, the wordpunkt and punktword tokenisers work slightly different, and I don't know which is the best to use. But for now, I need to get this working, so lets just pick the wordpunkt. I need to make sure that dict and sentences are tokenized the same way, so this needs first with comment, later via variable set in control, that allows you to pick different tokenizers
+
+what's the best way to store the tokens? it needs to be a list, but maybe I want to store the token itself too for fast lookup later
+
+so now I find entities again, need to save their positions next -> done kind sir
+also hardcode tokenizer in control
+document the module
+change storing of text in the tp module
+rename the other modules
+
+i probs also want to change it so it doesn't need to make a new processing instance for every text

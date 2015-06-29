@@ -20,7 +20,6 @@ print(my_file.texts['BEL-20000144.json'])
 # STAGE 2: low level text processing: tokenisation, PoS tagging
 my_tp = tp(my_file.texts['BEL-20000144.json'],'BEL-20000144.json')
 my_tp.tokenize_words()
-print(my_tp.tokens)
 
 # my_nltk = Aq_nltk(my_pubmed.get_abstract(),my_pubmed.pmid)
 # my_nltk.tokenize_words()
@@ -32,8 +31,8 @@ print(my_tp.tokens)
 # Then use recognise_entities, giving the tokens of the text as a list, the funciton will return a list of found entities
 # TODO: later on, you will be able to use Entiry_recognition's export functions to save these lists
 
-# my_er = er('entity_recognition/termlists/test_terms.csv')
-# entities = my_er.recognise_entities(words=my_tp.tokens)
-# print(entities)
+my_er = er('entity_recognition/termlists/test_terms.csv',force_reload=1)
+entities = my_er.recognise_entities(words=my_tp.tokens)
+print(entities)
 
 
