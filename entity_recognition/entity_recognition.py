@@ -21,7 +21,7 @@ class Entity_recognition(object):
 	default_termlist = 'ctd.csv'
 	terms = dict()
 	
-	def __init__(self, termlist_path=None, force_reload=None):
+	def __init__(self, termlist_path=None, force_reload=None, tokenizer='WordPunctTokenizer'):
 		"""Loads the terms from file or pickle"""
 		"""By default, it will look for a previous pickle by the same name as the termlist_path. If force_reload is set, it will always load from file. Use this when the file has changed. If loading from file, it will automatically save loaded entities as pickle for faster (up to 20 times) loading the next time."""
 		
@@ -45,7 +45,7 @@ class Entity_recognition(object):
 		# Load termlist from file
 		else:
 			print(termlist_path)
-			self.terms = self.load_termlist_from_file(termlist_path)
+			self.terms = self.load_termlist_from_file(termlist_path,tokenizer)
 			self.write_terms_to_pickle(self.terms, pickle_path)
 						
 	def load_termlist_from_pickle(self,pickle_path):
@@ -62,11 +62,24 @@ class Entity_recognition(object):
 		print('Loaded terms from pickle ', end - start)
 		return terms
 		
-	def load_termlist_from_file(self,termlist_path):
+	def load_termlist_from_file(self,termlist_path,tokenizer):
 		# Termlist assumed to have the following format:
 		# [0] = id, [1] = term to match, [2] = type, [3] = prefered form
 		
 		terms = dict()
+		word_tokenizer = None
+		
+		# Add other supported tokenizers here
+		if tokenizer == 'WordPunctTokenizer':
+			word_tokenizer = WordPunctTokenizer()
+		
+		if tokenizer == 'PunktWordTokenizer':
+			from nltk.tokenize import PunktWordTokenizer
+			word_tokenizer = PunktWordTokenizer()
+			
+		if not tokenizer:
+			print(tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
+			word_tokenizer = WordPunctTokenizer()
 		
 		start = time.time()
 		print("Loading terms from file now.")
@@ -76,8 +89,7 @@ class Entity_recognition(object):
 								
 				term_id = line[0]
 				
-				# This needs to be the same tokenizer as is used in the text processing module
-				term = WordPunctTokenizer().tokenize(line[1])
+				term = word_tokenizer.tokenize(line[1])
 				term_type = line[2]
 				term_preferred_form = line[3]
 				
@@ -94,6 +106,9 @@ class Entity_recognition(object):
 		return terms
 	
 	def write_terms_to_pickle(self,terms,filename):
+		if not os.path.exists(os.path.dirname(filename)):
+			os.makedirs(os.path.dirname(filename))
+		
 		with open(filename,'wb') as file:
 			pickle.dump(terms,file)
 		print('Written terms to pickle at ', filename)

@@ -30,7 +30,8 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* test with bigger data sets
 	
 * low level text processing
-	* get word positions when tokenising so ER can use them
+	* move choice of tokenizer into control.py, so it's always the same
+	* don't store text in the object itself, so the same object can be used to tokenize multiple texts
 
 * entity recognition
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
