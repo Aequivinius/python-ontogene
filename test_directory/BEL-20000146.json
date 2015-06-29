@@ -1,0 +1,15 @@
+{
+    "sourceid":"10760570",
+    "sourcedb":"PubMed",
+    "denotations":[
+        {
+            "obj":"cat(p(HGNC:UBE2L3)) increases deg(p(HGNC:MYC))",
+            "span":{
+                "begin":0,
+                "end":"184"
+            },
+            "id":"BEL:20000146"
+        }
+    ],
+    "text":"UbcH7 is a ubiquitin-conjugating enzyme mediating c-fos degradation, transcription factor NF-kappaB maturation, human papilloma virus-mediated p53 and Myc protein degradation, in vitro."
+}

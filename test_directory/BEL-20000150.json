@@ -1,0 +1,15 @@
+{
+    "sourceid":"10766914",
+    "sourcedb":"PubMed",
+    "denotations":[
+        {
+            "obj":"a(CHEBI:genistein) decreases p(MGI:Cftr)",
+            "span":{
+                "begin":0,
+                "end":"67"
+            },
+            "id":"BEL:20000150"
+        }
+    ],
+    "text":"The data suggest that genistein may inhibit CFTR by two mechanisms. "
+}

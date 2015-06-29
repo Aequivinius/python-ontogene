@@ -1,0 +1,15 @@
+{
+    "sourceid":"10780327",
+    "sourcedb":"PubMed",
+    "denotations":[
+        {
+            "obj":"cat(p(HGNC:F2)) increases p(HGNC:F2R,pmod(P))",
+            "span":{
+                "begin":0,
+                "end":"185"
+            },
+            "id":"BEL:20000152"
+        }
+    ],
+    "text":"Stimulation of human platelets with thrombin or thrombin receptor agonist peptide (TRAP/ Ser-Phe-Leu-Leu-Arg-Asn) resulted in phosphorylation of the protease-activated receptor 1 (PAR1)."
+}

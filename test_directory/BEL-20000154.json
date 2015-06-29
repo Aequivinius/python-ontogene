@@ -1,0 +1,15 @@
+{
+    "sourceid":"10781616",
+    "sourcedb":"PubMed",
+    "denotations":[
+        {
+            "obj":"complex(p(HGNC:PTTG1IP),p(HGNC:PTTG1)) directlyIncreases tloc(p(HGNC:PTTG1),GOCCID:0005737,GOCCID:0005634)",
+            "span":{
+                "begin":0,
+                "end":"101"
+            },
+            "id":"BEL:20000154"
+        }
+    ],
+    "text":"The interaction between PBF and PTTG facilitated PTTG translocation from the cytoplasm to the nucleus."
+}
