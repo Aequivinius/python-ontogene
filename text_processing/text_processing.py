@@ -10,7 +10,7 @@ class Text_processing(object):
 	"""Allows to do tokenisation and PoS tagging on a given text"""
 	"""For now, needs manual downloading in NLTK of tokenizers/punkt and maxent_treebank_pos_tagger before it works"""
 	"""Structure of tokens: [0]: token, [1]: start position, [2]: end position"""
-	
+		
 	def __init__(self,text, text_id, tokenizer='WordPunctTokenizer'):
 		
 		# TODO: this code fragment should automatically download nltk models if they haven't been downloaded yet,
@@ -31,18 +31,18 @@ class Text_processing(object):
 		self.sentences = []
 		self.tagged = []
 		self.sentence_tokenizer = PunktSentenceTokenizer()
-		self.tokenizer = None
+		self.word_tokenizer = None
 
 		# Here you can add supported tokenizers. Note that it must implement the span_tokenize method
 		if tokenizer == 'WordPunctTokenizer':
 			self.word_tokenizer = WordPunctTokenizer()
-		
+				
 		if tokenizer == 'PunktWordTokenizer':
 			from nltk.tokenize import PunktWordTokenizer
 			self.word_tokenizer = PunktWordTokenizer()
-			
-		if not self.tokenizer:
-			print(tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
+		
+		if not self.word_tokenizer:
+			print("Text processing: ", tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
 			self.word_tokenizer = WordPunctTokenizer()
 			
 	def tokenize_sentences(self):

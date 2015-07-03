@@ -34,7 +34,7 @@ my_tp.tokenize_words()
 # Then use recognise_entities, giving the tokens of the text as a list, the funciton will return a list of found entities
 # TODO: later on, you will be able to use Entiry_recognition's export functions to save these lists
 
-my_er = er('entity_recognition/termlists/test_terms.csv',tokenizer=tokenizer, force_reload=1)
+my_er = er('entity_recognition/termlists/test_terms.csv',tokenizer=tokenizer)
 entities = my_er.recognise_entities(words=my_tp.tokens)
 print(entities)
 

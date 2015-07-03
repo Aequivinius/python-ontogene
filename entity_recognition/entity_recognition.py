@@ -77,8 +77,8 @@ class Entity_recognition(object):
 			from nltk.tokenize import PunktWordTokenizer
 			word_tokenizer = PunktWordTokenizer()
 			
-		if not tokenizer:
-			print(tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
+		if not word_tokenizer:
+			print("Entity recognition: ", tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
 			word_tokenizer = WordPunctTokenizer()
 		
 		start = time.time()
