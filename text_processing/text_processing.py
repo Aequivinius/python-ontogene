@@ -11,7 +11,7 @@ class Text_processing(object):
 	"""For now, needs manual downloading in NLTK of tokenizers/punkt and maxent_treebank_pos_tagger before it works"""
 	"""Structure of tokens: [0]: token, [1]: start position, [2]: end position"""
 		
-	def __init__(self,text, text_id, tokenizer='WordPunctTokenizer'):
+	def __init__(self, tokenizer='WordPunctTokenizer'):
 		
 		# TODO: this code fragment should automatically download nltk models if they haven't been downloaded yet,
 		# but it doesn't seem to work. For now needs manual download
@@ -24,12 +24,7 @@ class Text_processing(object):
 		# 	nltk.data.find('maxent_treebank_pos_tagger')
 		# except LookupError:
 		# 	nltk.download('maxent_treebank_pos_tagger')
-		
-		self.id = text_id
-		self.text = text
-		self.tokens = []
-		self.sentences = []
-		self.tagged = []
+
 		self.sentence_tokenizer = PunktSentenceTokenizer()
 		self.word_tokenizer = None
 
@@ -45,17 +40,20 @@ class Text_processing(object):
 			print("Text processing: ", tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
 			self.word_tokenizer = WordPunctTokenizer()
 			
-	def tokenize_sentences(self):
-		self.sentences = self.sentence_tokenizer.tokenize(self.text)
+	def tokenize_sentences(self, text):
+		return self.sentence_tokenizer.tokenize(text)
+	
+	# takes text as input	
+	def tokenize_words(self, text):
+		sentences = self.tokenize_sentences(text)
+		tokens = list()
 		
-	def tokenize_words(self):
-		if not self.sentences:
-			self.tokenize_sentences()
-		
-		for sentence in self.sentences:
+		for sentence in sentences:
 			for token in self.word_tokenizer.span_tokenize(sentence):
 				# save actual token together with it's positions
-				self.tokens.append((self.text[token[0]:token[1]],token[0],token[1]))
+				tokens.append((text[token[0]:token[1]],token[0],token[1]))
+		
+		return tokens
 	
 	# TODO might be broken because tokens' format has changed		
 	def pos_tag(self):

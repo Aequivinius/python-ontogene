@@ -18,6 +18,12 @@ The pipeline has several stages, each of which is its own module. The pipeline i
 3. entity recognition
 	This module uses a supplied list of named entities and returns their positions in the text
 
+CHANGES
+=======
+* low level text processing
+	* this class used to store the text and the tokens as a class variable. Now, however, this falls into the responsibility of control.py. The tp class will only store the tokenizer, and return tokenized text from the tokenize_words() function.
+
+
 TO DO
 =====
 The pipeline is currently developed up to stage 3, that is, entity recognition. Besides the development of the following stages, the following things need doing:
@@ -30,8 +36,7 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* test with bigger data sets
 	
 * low level text processing
-	* move choice of tokenizer into control.py, so it's always the same
-	* don't store text in the object itself, so the same object can be used to tokenize multiple texts
+	* deal with PoS tagging as it's possibly affected by the changes of storing texts internally no longer
 
 * entity recognition
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
@@ -47,3 +52,21 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
+
+oki, weiter im text. i wanted to make the tp without class variables storing text.
+
+so far, I have the following class vars:
+
+self.id = text_id # I don't need that, that now falls in the control
+self.text = text # into function
+self.tokens = [] # return value of function
+self.sentences = []
+self.tagged = []
+
+okay, that is done it seems. document stuff and move on to pos tagging. then tidy up import, then write export functions. 
+
+then do the rest: documentation / sphinx, better dictionary structure, prolog, latex
+
+deal with tagging later.
+
+and then i can deal with aq_import (rename, document)
