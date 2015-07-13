@@ -21,10 +21,12 @@ print(my_file.texts['BEL-20000144.json'])
 
 
 # STAGE 2: low level text processing: tokenisation, PoS tagging
-# How to use: first create an object Text_processing, which will have the tokenizer as a class variable. Use tokenize_words(text) to tokenize.
+# How to use: first create an object Text_processing, which will have the tokenizer as a class variable. Use tokenizer.tokenize_words(text) to tokenize; use tokenizer.pos_tag(tokenized_words) to pos-tag
 my_tp = tp(tokenizer=tokenizer)
 tokens = my_tp.tokenize_words(my_file.texts['BEL-20000144.json'])
 print(tokens)
+pos_tagged = my_tp.pos_tag(tokens)
+print(pos_tagged)
 
 # my_nltk = Aq_nltk(my_pubmed.get_abstract(),my_pubmed.pmid)
 # my_nltk.tokenize_words()

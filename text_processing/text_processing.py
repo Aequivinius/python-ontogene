@@ -10,6 +10,7 @@ class Text_processing(object):
 	"""Allows to do tokenisation and PoS tagging on a given text"""
 	"""For now, needs manual downloading in NLTK of tokenizers/punkt and maxent_treebank_pos_tagger before it works"""
 	"""Structure of tokens: [0]: token, [1]: start position, [2]: end position"""
+	"""Structure of tagged tokens: same as tokens, and [3] is tag"""
 		
 	def __init__(self, tokenizer='WordPunctTokenizer'):
 		
@@ -56,11 +57,28 @@ class Text_processing(object):
 		return tokens
 	
 	# TODO might be broken because tokens' format has changed		
-	def pos_tag(self):
-
-		for sentence in self.tokens:
-			self.tagged.append(nltk.pos_tag(sentence))
+	def pos_tag(self, span_tokens):
+		"""Takes as input tokens with position information, and returns a list in the form of [0] token, [1] start position, [2] end position, [4] pos-tag"""
 		
+		# nltk.pos_tag() takes as argument a list of tokens, so we need to get rid of positions first, then pos-tag, then reconcile with position information
+		tokens = list()
+		
+		for span_token in span_tokens:
+			tokens.append(span_token[0])
+		
+		tagged_tokens = nltk.pos_tag(tokens)
+		
+		# reconcile with position information
+		span_tagged_tokens = list()
+		for i in range(len(span_tokens)):
+			
+			# just a little security measure should something go wrong
+			if span_tokens[i][0] == tagged_tokens[i][0]:
+				span_tagged_token = (span_tokens[i][0] , span_tokens[i][1] , span_tokens[i][2] , tagged_tokens[i][1])
+				span_tagged_tokens.append(span_tagged_token)
+		
+		return span_tagged_tokens
+			
 	# based on Osman's code	
 	# TODO change this output directory to be within the text_processing directory
 	# TODO might be broken because tokens' format has changed
