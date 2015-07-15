@@ -35,9 +35,21 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* write better documentation of the code (check out sphinx)
 	* test with bigger data sets
 	* might be a good idea to write a sample control with hypothetical string to show how to use the pipeline
+	* read a book on python best practises
 	
 * entity recognition
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
+	* use new big list
+		* make sure it's flexible, allow 4-entry list as well as 6-entry list
+		* check if there's memory issues, run on kitt
+		* read paper
+		* note time
+	
+* parsing
+	* read up on stanford parser
+		* interface it
+	* check malt parser
+	* other parsers?
 	
 * project
 	* do some more prolog
