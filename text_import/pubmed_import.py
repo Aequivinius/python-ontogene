@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Downloads abstracts from PubMed using entrez
+# Nico Colic, July 2015
 # Based on code by Tilia Ellendorff
 
 import pickle # Python 3 will automatically try to use cPickle
@@ -10,13 +10,19 @@ import os
 
 # A file loaded as pickle from a PubMed dump in Biopython format
 class Pubmed_import(object):
+	"""Downloads file from Pubmed if it has not been downloaded before, otherwise returns previously downloaded version"""
 
-	def __init__(self, pmid, dump_dir='aq_import_dumps', entrez_email=None, options=None, args=None):
+	def __init__(self, pmid, dump_dir=None, entrez_email=None, options=None, args=None):
+		"""If you want to supply other directory for storing and looking for previously downloaded files, supply absolute path"""
 		self.pmid = pmid
-		self.path = os.path.join(dump_dir,pmid)
 		
-		# where files already downloaded are stored
-		self.dump_dir = dump_dir
+		if dump_dir == None:
+			my_directory = os.path.dirname(os.path.abspath(__file__))
+			self.dump_dir = os.path.join(my_directory, 'dumps')
+			self.path = os.path.join(self.dump_dir,pmid)
+			
+		else:
+			self.path = os.path.join(self.dump_dir,pmid)
 
 		# create folder if it doesn't exist yet
 		if not os.path.exists(self.dump_dir):
@@ -33,6 +39,7 @@ class Pubmed_import(object):
 		try:
 			self.file = open(self.path, 'rb')
 			self.text = pickle.load(self.file)
+			print('DOWNLOADED AND WRITTEN TO FILE')
 
 		except (IOError, EOFError, AttributeError):
 			print('ERROR, NO DATA FOR', self.pmid)
@@ -59,7 +66,7 @@ class Pubmed_import(object):
 		try:
 			return self.text[0]
 		except (IndexError, KeyError):
-			print(pmid, 'no text_dict found', self.text)
+			print(self.pmid, 'no text_dict found', self.text)
 
 	def get_abstract(self, options=None, args=None):
 		try:
@@ -148,7 +155,7 @@ class Pubmed_import(object):
 		except (IndexError, KeyError, TypeError):
 			return None
 	
-	def export_xml(self,output_directory='aq_import_converted_files',mode=None):
+	def export_xml(self,output_directory='converted_files',mode=None):
 		import xml.etree.ElementTree as ET
 		pmid_medline = self.text[0][u'MedlineCitation']
 		
@@ -200,14 +207,25 @@ class Pubmed_import(object):
 				if major_topic != qualifier_name_major_topic:
 					m.set('qualifier_name_major_topic',qualifier_name_major_topic)
 		
+		my_directory = os.path.dirname(os.path.abspath(__file__))
+		absolute_output_directory = os.path.join(my_directory,output_directory)
+		
+		# create folder
+		if not os.path.exists(absolute_output_directory):
+			try:
+				os.makedirs(absolute_output_directory)
+			except():
+				print('Could not create directory', absolute_output_directory)
+				return None
+		
 		# write using etree
-		file_name = os.path.join(output_directory, self.pmid + '.xml')
+		file_name = os.path.join(absolute_output_directory, self.pmid + '.xml')
 		if ( mode == 'both' or mode == 'normal' or mode == None ):
 			with open(file_name,'wb') as f:
 				ET.ElementTree(article).write(f,encoding="UTF-8",xml_declaration=True)
 		
 		# Pretty Print
-		file_name = os.path.join(output_directory, self.pmid + '_pretty.xml')
+		file_name = os.path.join(absolute_output_directory, self.pmid + '_pretty.xml')
 		if ( mode == 'both' or mode == 'pretty' ) :
 			from xml.dom import minidom
 			
@@ -215,9 +233,21 @@ class Pubmed_import(object):
 			with open(file_name,'w') as f:
 				f.write(pretty_article)
 	
-	def export_json(self,output_directory='aq_import_converted_files'):
+	def export_json(self,output_directory='converted_files'):
 		import json
-		file_name = os.path.join(output_directory, self.pmid + '.json')
+		
+		my_directory = os.path.dirname(os.path.abspath(__file__))
+		absolute_output_directory = os.path.join(my_directory,output_directory)
+		
+		# create folder
+		if not os.path.exists(absolute_output_directory):
+			try:
+				os.makedirs(absolute_output_directory)
+			except():
+				print('Could not create directory', absolute_output_directory)
+				return None
+
+		file_name = os.path.join(absolute_output_directory, self.pmid + '.json')
 		with open(file_name,'w') as f:
 			f.write(	json.dumps(self.text[0], indent=2, separators=(',', ':')))
 		

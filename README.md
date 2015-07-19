@@ -29,15 +29,18 @@ TO DO
 The pipeline is currently developed up to stage 3, that is, entity recognition. Besides the development of the following stages, the following things need doing:
 
 * general
-	* tidy up the code
-	* rename modules (get rid of the silly aq_ prefix)
-	* write xml and json export functions for all modules
-	* write better documentation of the code (check out sphinx)
 	* test with bigger data sets
 	* might be a good idea to write a sample control with hypothetical string to show how to use the pipeline
-	* read a book on python best practises
+	
+* text import
+	* test import from file
+	* export function
+	
+* text processing
+	* export function
 	
 * entity recognition
+	* export function
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
 	* use new big list
 		* make sure it's flexible, allow 4-entry list as well as 6-entry list
@@ -54,6 +57,8 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 * project
 	* do some more prolog
 	* start to write a report
+	* check out shpinx
+	* read a python best practises book
 
 CREDITS
 =======
