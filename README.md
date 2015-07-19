@@ -29,7 +29,7 @@ TO DO
 The pipeline is currently developed up to stage 3, that is, entity recognition. Besides the development of the following stages, the following things need doing:
 
 * general
-	* test with bigger data sets
+	* test with bigger data sets (use files in pmid folder)
 	* might be a good idea to write a sample control with hypothetical string to show how to use the pipeline
 	
 * text import
@@ -45,7 +45,6 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* use new big list
 		* make sure it's flexible, allow 4-entry list as well as 6-entry list
 		* check if there's memory issues, run on kitt
-		* read paper
 		* note time
 	
 * parsing
