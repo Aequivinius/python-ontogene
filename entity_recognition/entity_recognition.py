@@ -10,27 +10,37 @@ import pickle
 import os.path
 
 class Entity_recognition(object):
-	"""Allows list-based entity recognition for a piece of text"""
-	"""The object holds the list of entities to be recognised. To find entities, use my_er.recognise_entities(haystack_words), which will return a list of found entities"""
-	"""Consequently, the object does not store the found entities. This is done so that you can use one Entity_recognition object to find NEs in different texts without having to load the termlist anew everytime. That also means that you have to deal with the found entities in the control.py file."""
+	"""Dictionary entity recognition. Object holds dictionary; use my_er.recognise_entities(haystack) which returns list of entities. The object does not store found entities, so you can use one Entity_recognition object to find NEs in different texts"""
 	
-	"""Structure of terms: key = first word of term, [0] = whole term , [1] = term_id , [2] = term_type , [3] = term_preferred_form, [4] = number of tokens of term"""
+	"""Structure of dictionary (called terms): key = first word of term, [0] = whole term , [1] = term_id , [2] = term_type , [3] = term_preferred_form, [4] = number of tokens of term"""
+	
 	"""Structure of returned entities: key = id, [0] = whole term, [1] - [4] like terms, [5] = start position, [6] = end position"""
-	"""Structure of words (supplied to find NEs in): [0]: token, [1]: start position in text, [2]: end position in text"""
+	"""Structure of haystack: list of tuples ([0]: token, [1]: start position in text, [2]: end position in text). This is the format that is produced by Text_processing"""
 	
-	default_termlist = 'ctd.csv'
+	default_termlist = 'ontogene_terms_C_D_F03.tsv'
+	default_termlist_format = 6
 	terms = dict()
 	
-	def __init__(self, termlist_path=None, force_reload=None, tokenizer='WordPunctTokenizer'):
+	def __init__(self, termlist_path=None, termlist_format=None, force_reload=None, tokenizer='WordPunctTokenizer'):
 		"""Loads the terms from file or pickle"""
 		"""By default, it will look for a previous pickle by the same name as the termlist_path. If force_reload is set, it will always load from file. Use this when the file has changed. If loading from file, it will automatically save loaded entities as pickle for faster (up to 20 times) loading the next time."""
+		
+		"""There are different formats of files to load termlists from: 
+		Make sure termlist_path and termlist_format are congruent.
+			4-tuple (termlist_format=4)
+				[0] id, [1] term, [2] type, [3] prefered form
+			6-tuple (termlist_format=6)
+				[0] original id, [1] term, [2] type, [3] prefered form, [4] resource from which it comes, [5] internal id"""
 		
 		my_path = os.path.dirname(os.path.abspath(__file__))
 		
 		# Check if user has specified a termlist to load, otherwise load default
 		if not termlist_path :
 			termlist_path = os.path.join(my_path,self.default_termlist)
-		
+			
+		if not termlist_format :
+			termlist_format = self.default_termlist_format
+				
 		termlist_filename = os.path.split(termlist_path)[1]
 		pickles_path = os.path.join(my_path,'pickles')
 		
@@ -44,10 +54,10 @@ class Entity_recognition(object):
 		
 		# Load termlist from file
 		else:
-			print(termlist_path)
-			self.terms = self.load_termlist_from_file(termlist_path,tokenizer)
+			my_tokenizer = self.get_tokenizer(tokenizer)
+			self.terms = self.load_termlist_from_file(termlist_path,termlist_format,my_tokenizer)
 			self.write_terms_to_pickle(self.terms, pickle_path)
-						
+							
 	def load_termlist_from_pickle(self,pickle_path):
 		terms = dict()
 		
@@ -62,24 +72,14 @@ class Entity_recognition(object):
 		print('Loaded terms from pickle ', end - start)
 		return terms
 		
-	def load_termlist_from_file(self,termlist_path,tokenizer):
+	
+		
+	def load_termlist_from_file(self,termlist_path, termlist_format, word_tokenizer):
 		# Termlist assumed to have the following format:
 		# [0] = id, [1] = term to match, [2] = type, [3] = prefered form
+		# [0] original id, [1] term, [2] type, [3] prefered form, [4] resource from which it comes, [5] internal id
 		
 		terms = dict()
-		word_tokenizer = None
-		
-		# Add other supported tokenizers here
-		if tokenizer == 'WordPunctTokenizer':
-			word_tokenizer = WordPunctTokenizer()
-		
-		if tokenizer == 'PunktWordTokenizer':
-			from nltk.tokenize import PunktWordTokenizer
-			word_tokenizer = PunktWordTokenizer()
-			
-		if not word_tokenizer:
-			print("Entity recognition: ", tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
-			word_tokenizer = WordPunctTokenizer()
 		
 		start = time.time()
 		print("Loading terms from file now.")
@@ -87,19 +87,21 @@ class Entity_recognition(object):
 		with open(termlist_path) as tsv:
 			for line in csv.reader(tsv, delimiter="\t"):
 								
-				term_id = line[0]
+				term_id = line[0] if termlist_format==4 else line[5]
+				term_resource = line[4] if termlist_format==6 else 'unknown'
+				term_original_id = line[0]
 				
 				term = word_tokenizer.tokenize(line[1])
 				term_type = line[2]
 				term_preferred_form = line[3]
 				
-				value_tuple = ( term , term_id , term_type , term_preferred_form , len(term) )
+				value_tuple = ( term , term_id , term_type , term_preferred_form , len(term) , term_resource , term_original_id )
 				
 				if term[0] in terms :
 					terms[term[0]].append(value_tuple)
 				else :
 					terms[term[0]] = [ value_tuple ]
-		
+
 		end = time.time()
 		print("Finished loading dictionary in ", round(end - start,2), " seconds")
 		
@@ -163,3 +165,19 @@ class Entity_recognition(object):
 		return entities
 		
 # TODO: write export functions for found entities
+
+	def get_tokenizer(self, tokenizer):
+		""""Add other supported tokenizers here"""
+		
+		if tokenizer == 'WordPunctTokenizer':
+			word_tokenizer = WordPunctTokenizer()
+		
+		if tokenizer == 'PunktWordTokenizer':
+			from nltk.tokenize import PunktWordTokenizer
+			word_tokenizer = PunktWordTokenizer()
+			
+		if not word_tokenizer:
+			print("Entity recognition: ", tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
+			word_tokenizer = WordPunctTokenizer()
+			
+		return word_tokenizer

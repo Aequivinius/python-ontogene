@@ -1,0 +1,100 @@
+D000001	A 23187	Chemical	Calcimycin	mesh_desc	0
+D000001	A23187, Antibiotic	Chemical	Calcimycin	mesh_desc	0
+D000001	Antibiotic A23187	Chemical	Calcimycin	mesh_desc	0
+D000001	A23187	Chemical	Calcimycin	mesh_desc	0
+D000001	A-23187	Chemical	Calcimycin	mesh_desc	0
+D000001	Calcimycin	Chemical	Calcimycin	mesh_desc	0
+D000002	Difos	Chemical	Temefos	mesh_desc	1
+D000002	Temephos	Chemical	Temefos	mesh_desc	1
+D000002	Temefos	Chemical	Temefos	mesh_desc	1
+D000002	Abate	Chemical	Temefos	mesh_desc	1
+D000006	Abdomens, Acute	Disease	Abdomen, Acute	mesh_desc	2
+D000006	Acute Abdomen	Disease	Abdomen, Acute	mesh_desc	2
+D000006	Abdomen, Acute	Disease	Abdomen, Acute	mesh_desc	2
+D000006	Acute Abdomens	Disease	Abdomen, Acute	mesh_desc	2
+D000007	Abdominal Injuries	Disease	Abdominal Injuries	mesh_desc	3
+D000007	Abdominal Injury	Disease	Abdominal Injuries	mesh_desc	3
+D000007	Injuries, Abdominal	Disease	Abdominal Injuries	mesh_desc	3
+D000007	Injury, Abdominal	Disease	Abdominal Injuries	mesh_desc	3
+D000008	Abdominal Neoplasms	Disease	Abdominal Neoplasms	mesh_desc	4
+D000008	Abdominal Neoplasm	Disease	Abdominal Neoplasms	mesh_desc	4
+D000008	Neoplasms, Abdominal	Disease	Abdominal Neoplasms	mesh_desc	4
+D000008	Neoplasm, Abdominal	Disease	Abdominal Neoplasms	mesh_desc	4
+D000012	Acanthocytoses	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Betalipoprotein Deficiency Diseases	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Betalipoprotein Deficiency Disease	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Disease, Betalipoprotein Deficiency	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Bassen-Kornzweig Syndrome	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Bassen Kornzweig Disease	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Bassen Kornzweig Syndrome	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Abetalipoproteinemia	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Bassen-Kornzweig Disease	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Deficiency Disease, Betalipoprotein	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Acanthocytosis	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Deficiency Diseases, Betalipoprotein	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Microsomal Triglyceride Transfer Protein Deficiency Disease	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Microsomal Triglyceride Transfer Protein Deficiency	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Diseases, Betalipoprotein Deficiency	Disease	Abetalipoproteinemia	mesh_desc	5
+D000012	Acanthocytoses	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Betalipoprotein Deficiency Diseases	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Betalipoprotein Deficiency Disease	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Disease, Betalipoprotein Deficiency	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Bassen-Kornzweig Syndrome	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Bassen Kornzweig Disease	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Bassen Kornzweig Syndrome	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Abetalipoproteinemia	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Bassen-Kornzweig Disease	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Deficiency Disease, Betalipoprotein	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Acanthocytosis	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Deficiency Diseases, Betalipoprotein	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Microsomal Triglyceride Transfer Protein Deficiency Disease	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Microsomal Triglyceride Transfer Protein Deficiency	Disease	Abetalipoproteinemia	mesh_desc	6
+D000012	Diseases, Betalipoprotein Deficiency	Disease	Abetalipoproteinemia	mesh_desc	6
+D000013	Congenital Abnormalities	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Abnormalities, Congenital	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Congenital Abnormality	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Defect, Birth	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Deformity	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Birth Defect	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Defects, Birth	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Birth Defects	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Deformities	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Defects, Congenital	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Congenital Defect	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Abnormality, Congenital	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Congenital Defects	Disease	Congenital Abnormalities	mesh_desc	7
+D000013	Defect, Congenital	Disease	Congenital Abnormalities	mesh_desc	7
+D000014	Abnormalities, Drug-Induced	Disease	Abnormalities, Drug-Induced	mesh_desc	8
+D000014	Drug-Induced Abnormalities	Disease	Abnormalities, Drug-Induced	mesh_desc	8
+D000014	Abnormality, Drug-Induced	Disease	Abnormalities, Drug-Induced	mesh_desc	8
+D000014	Drug Induced Abnormalities	Disease	Abnormalities, Drug-Induced	mesh_desc	8
+D000014	Drug-Induced Abnormality	Disease	Abnormalities, Drug-Induced	mesh_desc	8
+D000014	Abnormalities, Drug Induced	Disease	Abnormalities, Drug-Induced	mesh_desc	8
+D000015	Abnormalities, Multiple	Disease	Abnormalities, Multiple	mesh_desc	9
+D000015	Multiple Abnormalities	Disease	Abnormalities, Multiple	mesh_desc	9
+D000016	Radiation-Induced Abnormalities	Disease	Abnormalities, Radiation-Induced	mesh_desc	A
+D000016	Radiation Induced Abnormalities	Disease	Abnormalities, Radiation-Induced	mesh_desc	A
+D000016	Radiation-Induced Abnormality	Disease	Abnormalities, Radiation-Induced	mesh_desc	A
+D000016	Abnormality, Radiation-Induced	Disease	Abnormalities, Radiation-Induced	mesh_desc	A
+D000016	Abnormalities, Radiation Induced	Disease	Abnormalities, Radiation-Induced	mesh_desc	A
+D000016	Abnormalities, Radiation-Induced	Disease	Abnormalities, Radiation-Induced	mesh_desc	A
+D000016	Radiation-Induced Abnormalities	Disease	Abnormalities, Radiation-Induced	mesh_desc	B
+D000016	Radiation Induced Abnormalities	Disease	Abnormalities, Radiation-Induced	mesh_desc	B
+D000016	Radiation-Induced Abnormality	Disease	Abnormalities, Radiation-Induced	mesh_desc	B
+D000016	Abnormality, Radiation-Induced	Disease	Abnormalities, Radiation-Induced	mesh_desc	B
+D000016	Abnormalities, Radiation Induced	Disease	Abnormalities, Radiation-Induced	mesh_desc	B
+D000016	Abnormalities, Radiation-Induced	Disease	Abnormalities, Radiation-Induced	mesh_desc	B
+D000017	ABO Blood-Group Systems	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Factor, ABO	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Blood Groups, ABH	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Blood Group, H	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Blood Group H Type 1 Antigen	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	ABO Blood Group System	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Blood Groups, H	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Factors, ABO	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	ABH Blood Groups	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Blood Group, ABH	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Systems, ABO Blood-Group	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	Blood-Group Systems, ABO	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	System, ABO Blood-Group	Chemical	ABO Blood-Group System	mesh_desc	C
+D000017	H Blood Group	Chemical	ABO Blood-Group System	mesh_desc	C
