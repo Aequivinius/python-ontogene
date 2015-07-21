@@ -51,7 +51,6 @@ class Entity_recognition(object):
 			print('Set force_reload=1, or delete pickle if you want to load from file.')
 			
 			self.terms = self.load_termlist_from_pickle(pickle_path)
-			print(len(self.terms))
 		
 		# Load termlist from file
 		else:
@@ -186,3 +185,40 @@ class Entity_recognition(object):
 			word_tokenizer = WordPunctTokenizer()
 			
 		return word_tokenizer
+		
+	def export_tsv(self, id, entities):
+		
+		my_parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+		my_directory = os.path.join(my_parent_directory, 'output', 'entity_recognition')
+		
+		if not os.path.exists(my_directory):
+			os.makedirs(my_directory)
+			
+		my_path = os.path.join(my_directory, id + '.tsv')
+		
+		with open(my_path,'w') as f:
+			writer = csv.writer(f, delimiter='\t')
+			for entity in entities:
+				writer.writerow(entity)
+		
+	def export_tsv_legacy_format(self, id, entities):
+			
+			my_parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+			my_directory = os.path.join(my_parent_directory, 'output', 'entity_recognition')
+			
+			if not os.path.exists(my_directory):
+				os.makedirs(my_directory)
+				
+			my_path = os.path.join(my_directory, id + '.tsv')
+			
+			with open(my_path,'w') as f:
+				writer = csv.writer(f, delimiter='\t')
+				writer.writerow(['DOCUMENT ID', 'TYPE' , 'START POSITION' , 'END POSITION' , 'MATCHED TERM' , 'PREFERRED FORM' , 'TERM ID' , 'ORIGIN WITHIN DOCUMENT' , 'SENTENCE'])
+				for entity in entities:
+					
+					matched_term = ' '.join(entity[0])
+					row = [ id , entity[2] , entity[5] , entity[6] , matched_term , entity[3] , entity[1] , 'origin' , 'sentence']
+					
+					writer.writerow(row)	
+			
+		

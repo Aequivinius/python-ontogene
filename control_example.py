@@ -10,13 +10,13 @@ from entity_recognition.entity_recognition import Entity_recognition as er
 tokenizer = 'WordPunctTokenizer'
 
 my_pmid = Pubmed_import('11111111', entrez_email='ncolic@gmail.com')
-print(my_pmid.get_abstract())
 
 my_tp = tp(tokenizer=tokenizer)
-tokens = my_tp.tokenize_words(my_pmid.get_abstract())
+tokens = my_tp.tokenize_words(my_pmid.get_whole_abstract())
 
 my_er = er('entity_recognition/termlists/ontogene_terms_C_D_F03.tsv',termlist_format=6,tokenizer=tokenizer)
 entities = my_er.recognise_entities(words=tokens)
+my_er.export_tsv_legacy_format('11111111',entities)
 
 for entity in entities:
 	print(entity)

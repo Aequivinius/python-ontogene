@@ -12,6 +12,7 @@ import time
 # A file loaded as pickle from a PubMed dump in Biopython format
 class Pubmed_import(object):
 	"""Downloads file from Pubmed if it has not been downloaded before, otherwise returns previously downloaded version"""
+	"""Use get_abstract() or get_whole_abstact() for title and abstract"""
 
 	def __init__(self, pmid, dump_dir=None, entrez_email=None, options=None, args=None):
 		"""If you want to supply other directory for storing and looking for previously downloaded files, supply absolute path"""
@@ -135,7 +136,7 @@ class Pubmed_import(object):
 	def get_whole_abstract(self, options=None, args=None):
 		try:
 			whole_abstract_list = []
-			whole_abstract_list.append(self.pmid + '. ')
+			# whole_abstract_list.append(self.pmid + '. ')
 			whole_abstract_list.append(self.get_title())
 			whole_abstract_list.append(self.get_abstract())
 

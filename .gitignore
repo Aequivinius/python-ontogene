@@ -1,0 +1,9 @@
+.DS_Store
+entity_recognition/termlists/ontogene_terms_C_D_F03.tsv
+*/__pycache__/
+output/*
+output
+text_import/dumps/*
+text_import/dumps
+entity_recognition/pickles/*
+entity_recognition/pickles
