@@ -7,6 +7,7 @@
 import pickle # Python 3 will automatically try to use cPickle
 from Bio import Entrez
 import os
+import time
 
 # A file loaded as pickle from a PubMed dump in Biopython format
 class Pubmed_import(object):
@@ -22,12 +23,12 @@ class Pubmed_import(object):
 			self.path = os.path.join(self.dump_dir,pmid)
 			
 		else:
-			self.path = os.path.join(self.dump_dir,pmid)
+			self.path = os.path.join(dump_dir,pmid)
 
 		# create folder if it doesn't exist yet
-		if not os.path.exists(self.dump_dir):
+		if not os.path.exists(os.path.dirname(self.path)):
 			try:
-				os.makedirs(self.dump_dir)
+				os.makedirs(os.path.dirname(self.path))
 			except():
 				print('Could not create directory', self.dump_dir)
 				return None
@@ -35,11 +36,12 @@ class Pubmed_import(object):
 		if not self.pmid in os.listdir(self.dump_dir):
 			print('ATTEMPT TO DOWNLOAD DATA FOR', self.pmid)
 			self.download_pmid_data(entrez_email, options=options, args=args)
+			time.sleep(1) # to prevent too many downloads to pmid, which will get you blocked
+			print('DOWNLOADED AND WRITTEN TO FILE')
 
 		try:
 			self.file = open(self.path, 'rb')
 			self.text = pickle.load(self.file)
-			print('DOWNLOADED AND WRITTEN TO FILE')
 
 		except (IOError, EOFError, AttributeError):
 			print('ERROR, NO DATA FOR', self.pmid)
@@ -76,7 +78,7 @@ class Pubmed_import(object):
 				return ' '.join(abstract)
 
 			else:
-				abstract_list = [unicode(abstract[i]) for i in range(len(abstract))]
+				abstract_list = [str(abstract[i]) for i in range(len(abstract))] # was unicode
 				abstract_string = ' '.join(abstract_list)
 				return abstract_string
 
@@ -86,7 +88,8 @@ class Pubmed_import(object):
 	def get_title(self, options=None, args=None):
 		try:
 			text_dict = self.text[0]
-			return unicode(text_dict[u'MedlineCitation'][u'Article'][u'ArticleTitle'])
+			return str(text_dict[u'MedlineCitation'][u'Article'][u'ArticleTitle'])
+			# was unicode(...)
 
 		except (IndexError, KeyError, AttributeError):
 			return None
@@ -111,8 +114,9 @@ class Pubmed_import(object):
 		try:
 			text_dict = self.text[0]
 			mesh_list = text_dict[u'MedlineCitation'][u'MeshHeadingList']
-			descriptor_list = [unicode(mesh_list[i][u'DescriptorName']) for i in range(len(mesh_list))]
+			descriptor_list = [str(mesh_list[i][u'DescriptorName']) for i in range(len(mesh_list))]
 			return '; '.join(descriptor_list)
+			# was unicode(
 		except (IndexError, KeyError):
 			return None
 

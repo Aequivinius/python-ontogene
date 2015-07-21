@@ -30,22 +30,24 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 
 * general
 	* test with bigger data sets (use files in pmid folder)
+		* find a way to deal with errorenous files
 	* might be a good idea to write a sample control with hypothetical string to show how to use the pipeline
+	* configuration file
 	
 * text import
 	* test import from file
+	* tidy up unicode() problem from yesterday
 	* export function
+	* also look at title!
 	
 * text processing
 	* export function
 	
 * entity recognition
 	* export function
+		* including a tsv format
+	* check positions
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
-	* use new big list
-		* make sure it's flexible, allow 4-entry list as well as 6-entry list
-		* check if there's memory issues, run on kitt
-		* note time
 	
 * parsing
 	* read up on stanford parser
@@ -66,3 +68,9 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
+
+so, until tomorrow the main thing is to get it nice and running for er, and have export for that. nice to have would be to figure out unicode, and config file.
+
+then polish, and other export functions; and then we can deal with parsing.
+
+okay, let's get started with ER

@@ -51,6 +51,7 @@ class Entity_recognition(object):
 			print('Set force_reload=1, or delete pickle if you want to load from file.')
 			
 			self.terms = self.load_termlist_from_pickle(pickle_path)
+			print(len(self.terms))
 		
 		# Load termlist from file
 		else:
@@ -91,7 +92,7 @@ class Entity_recognition(object):
 				term_resource = line[4] if termlist_format==6 else 'unknown'
 				term_original_id = line[0]
 				
-				term = word_tokenizer.tokenize(line[1])
+				term = word_tokenizer.tokenize(line[1].lower())
 				term_type = line[2]
 				term_preferred_form = line[3]
 				
@@ -101,7 +102,6 @@ class Entity_recognition(object):
 					terms[term[0]].append(value_tuple)
 				else :
 					terms[term[0]] = [ value_tuple ]
-
 		end = time.time()
 		print("Finished loading dictionary in ", round(end - start,2), " seconds")
 		
@@ -130,7 +130,7 @@ class Entity_recognition(object):
 		# using a C-style loop for easy peeking at words following the current one
 		for i in range(len(words)):
 			
-			word = words[i][0]
+			word = words[i][0].lower()
 			if word in terms:
 								
 				entity_id = entity_id + 1
@@ -155,7 +155,8 @@ class Entity_recognition(object):
 								# TODO: like this we have an inefficiency because we check for all the entries, even though we could save ourselves some work if they we're structured like a tree
 						
 						if matched:
-							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i+j][2]))
+							# LALALALA: entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i+j][2]))
+							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1]))
 							# TODO: one could also set i to skip the words so far identified as a multi-word entry. But this might lead to some nested / parallel multi-word NEs to be missed
 					
 					else:

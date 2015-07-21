@@ -48,15 +48,19 @@ class Text_processing(object):
 	def tokenize_words(self, text):
 		sentences = self.tokenize_sentences(text)
 		tokens = list()
+		sentence_offset = 0
 		
 		for sentence in sentences:
 			for token in self.word_tokenizer.span_tokenize(sentence):
 				# save actual token together with it's positions
-				tokens.append((text[token[0]:token[1]],token[0],token[1]))
+				begin = token[0] + sentence_offset
+				end = token[1] + sentence_offset
+				tokens.append((text[begin:end],begin,end))
+			
+			sentence_offset = sentence_offset + len(sentence) + 1
 		
 		return tokens
 	
-	# TODO might be broken because tokens' format has changed		
 	def pos_tag(self, span_tokens):
 		"""Takes as input tokens with position information, and returns a list in the form of [0] token, [1] start position, [2] end position, [4] pos-tag"""
 		
