@@ -136,6 +136,7 @@ class Entity_recognition(object):
 				entity_id = entity_id + 1
 				
 				# check if multiple entries for first word in terms
+				
 				for entry in terms[word]:
 										
 					# remember, entry[4] is the number of words the NE has
@@ -146,17 +147,20 @@ class Entity_recognition(object):
 						
 						# entry[0] is the list of tokens in the multi-word NE
 						for j in range(len(entry[0])):
-							if not matched:
+							if not matched :
 								break
-							if matched and i+j < len(words) and entry[0][j] != words[i+j][0]:
+							
+							if i+j > ( len(words) - 1 ) :
+								matched = False
+								break
+								
+							if entry[0][j] != words[i+j][0]:
 								matched = False
 							else:
 								match_length = match_length + len(entry[0][j])
-								# TODO: like this we have an inefficiency because we check for all the entries, even though we could save ourselves some work if they we're structured like a tree
 						
 						if matched:
-							# LALALALA: entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i+j][2]))
-							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1]))
+							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i+j-1][2]))
 							# TODO: one could also set i to skip the words so far identified as a multi-word entry. But this might lead to some nested / parallel multi-word NEs to be missed
 					
 					else:

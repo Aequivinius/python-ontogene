@@ -47,6 +47,7 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* export function
 		* including a tsv format
 	* check positions
+	* make sure dictionary is loaded correctly, there seems to be too little entries
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
 	
 * parsing
@@ -74,3 +75,16 @@ so, until tomorrow the main thing is to get it nice and running for er, and have
 then polish, and other export functions; and then we can deal with parsing.
 
 okay, let's get started with ER
+
+so this all seems to work well enough, so we really want
+* find out ramanjini
+* positions
+* tsv export
+
+let's get started! there's no ramanjini in the abstract; and somehow my ramanjini entries don't have a end number. where do they come from?
+
+it exists as entity in the dictionary
+
+it seems i fixed index blub, but why would it match the last '.' with the ramanjini strain...?
+
+
