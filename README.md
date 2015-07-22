@@ -33,28 +33,23 @@ TO DO
 The pipeline is currently developed up to stage 3, that is, entity recognition. Besides the development of the following stages, the following things need doing:
 
 * general
-	* test with bigger data sets (use files in pmids folder)
-		* find a way to deal with erronous files
-	* might be a good idea to write a sample control with hypothetical string to show how to use the pipeline
-	* configuration file
-		* go through code and tidy up, get rid of default values
+	* go through the entire code:
+		* make it work with the config.py
+			* especially in regards to output directory
+		* test it with the PMIDs in the pmids directory
+		* get rid of default values as much as possible
+		* don't spend too much time on file_import.py
 	* a statistics function that appends to output/statistics_date_time.txt
-	
-* text import
-	* test import from file
-	* tidy up unicode() problem from yesterday
-	* export function
-	* also look at title!
+		* might be best done in control.py
+	* add plain text export
 	
 * text processing
-	* export function
-		* change folder to output/text_processing
+	* add export functions
 	
 * entity recognition
 	* export function
-		* add sentence number and origin within document (abstract, title) to tsv
-	* check positions
-	* make sure dictionary is loaded correctly, there seems to be too little entries
+		* add sentence number and origin within document (abstract, title) to tsv (like in the script on kitt)
+	* make sure dictionary is loaded correctly, there seem to be too few entries
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
 	
 * parsing
@@ -64,10 +59,11 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* other parsers?
 	
 * project
-	* do some more prolog
-	* start to write a report
 	* check out shpinx
 	* read a python best practises book
+	* do some more prolog
+	* start to write a report
+
 
 CREDITS
 =======
@@ -76,39 +72,3 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
-
-Oki, so we're still figuring out how to best do the config file. idea with class is good, now: how to supply file with pmids, and ids
-
-
-We want to be able:
-* supply single pmid
-* supply file with pmids
-	* the path: absolute (that's a bit shit)
-	* relative (also shit if I want it to be outside)
-	So here we need to offer both, and it should be very transparent
-	So no implicit guessing, but explicit setting
-* default file
-
-
-so we do relative / absolute now, then we add ability to add pmids directly (maybe with command line, too)
-
-oki, we have that
-
-
-
-it's still a bit a mess with all the folders and the like
-
-output is now centrally defined in config, so all the modules get it directly from there.
-
-as for loading text files for the individual modules, they need to take care of that (class var with default at the beginning, and an option to overwrite it with an absolute path
-
-alrighty, now we're in the export stuff...
-
-every module gets supplied the main output folder; and they then create their own subfolder.
-
-// statistics probably best in control.py, or separate module?
-
-
-a plain text export for pubmed
-
-and then I can deal with file import? (though that's really not important, so don't spend more than an hour or so)
