@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-from entity_recognition.entity_recognition import Entity_recognition as er
-
 # STAGE 0: Load configurations
 from config.config import Configuration
-my_config = Configuration()
+my_config = Configuration([])
 
 # STAGE 1A: Import texts from Pubmed
 from text_import.file_import import File_import
@@ -17,7 +14,7 @@ for pmid in my_config.pmids:
 	my_pubmed_article = Pubmed_import(pmid,my_config.pubmed_email)
 	pubmed_articles[pmid] = my_pubmed_article
 	
-	my_pubmed_article.export_json(my_config.output_directory_absolute)
+	# my_pubmed_article.export_json(my_config.output_directory_absolute)
 	# my_pubmed_article.export_xml(my_config.output_directory_absolute)
 		
 # STAGE 1B: Importing from files
@@ -33,32 +30,20 @@ my_tp = tp(word_tokenizer=my_config.word_tokenizer_object,
 tokens = dict()
 for pmid, pubmed_article in pubmed_articles.items	():
 	my_tokens = my_tp.tokenize_words(pubmed_article.get_whole_abstract_minus_mesh())
-	my_tp.export_tokens_to_xml(my_tokens, my_config.output_directory_absolute, mode=None)
 	tokens[pmid] = my_tokens
+	# my_tp.export_tokens_to_xml(pmid, my_tokens, my_config.output_directory_absolute)
 
-	
-	
-		
-# tokens = my_tp.tokenize_words(my_file.texts['BEL-20000144.json'])
-# print(tokens)
-# pos_tagged = my_tp.pos_tag(tokens)
-# print(pos_tagged)
-
-# tokenized_text = dict()
-# my_tp = tp(tokenizer=config.tokenizer)
-# for pmid , downloaded_pmid in downloaded_pmids.items():
-#     try:
-#         print(downloaded_pmid.get_abstract())
-#     except:
-#         i=0
 
 # STAGE 3: entity recognition
 # How to use: first create an object Entity_recognition, which takes as an argument a list of NEs to be found.
 # Then use recognise_entities, giving the tokens of the text as a list, the funciton will return a list of found entities
-# TODO: later on, you will be able to use Entiry_recognition's export functions to save these lists
+from entity_recognition.entity_recognition import Entity_recognition as er
 
-# my_er = er('entity_recognition/termlists/ontogene_terms_C_D_F03.tsv',termlist_format=6,tokenizer=config.tokenizer)
-# entities = my_er.recognise_entities(words=tokens)
-# print(entities)
+my_er = er(my_config.termlist_file_absolute,my_config.termlist_format,my_config.word_tokenizer_object)
+entities = list()
+for pmid, tokenized_text in tokens.items():
+	my_entities = my_er.recognise_entities(sentences=tokenized_text)
+	# my_er.export_tsv_legacy_format(pmid, my_entities, my_config.output_directory_absolute)
+	entities.extend(my_entities)
 
 

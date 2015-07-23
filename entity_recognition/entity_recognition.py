@@ -4,59 +4,47 @@
 # Nico Colic, June 2015
 
 import csv
-from nltk.tokenize import WordPunctTokenizer
 import time
 import pickle
 import os.path
 
 class Entity_recognition(object):
-	"""Dictionary entity recognition. Object holds dictionary; use my_er.recognise_entities(haystack) which returns list of entities. The object does not store found entities, so you can use one Entity_recognition object to find NEs in different texts"""
+	"""Dictionary entity recognition. Object holds dictionary; use my_er.recognise_entities(haystack) which returns list of found entities. The object does not store found entities, so you can use one Entity_recognition object to find NEs in different texts"""
 	
-	"""Structure of dictionary (called terms): key = first word of term, [0] = whole term , [1] = term_id , [2] = term_type , [3] = term_preferred_form, [4] = number of tokens of term"""
+	"""Structure of dictionary (called terms): key = first word of term, [ [0] = whole term , [1] = term_id , [2] = term_type , [3] = term_preferred_form, [4] = number of tokens of term ] [ ... ] """
 	
 	"""Structure of returned entities: key = id, [0] = whole term, [1] - [4] like terms, [5] = start position, [6] = end position"""
-	"""Structure of haystack: list of tuples ([0]: token, [1]: start position in text, [2]: end position in text). This is the format that is produced by Text_processing"""
+	"""Structure of haystack: list of sentences of tuples tuples ([0]: token, [1]: start position in text, [2]: end position in text). This is the format that is produced by Text_processing"""
 	
-	default_termlist = 'ontogene_terms_C_D_F03.tsv'
-	default_termlist_format = 6
+	pickles_directory = 'pickles'
 	terms = dict()
 	
-	def __init__(self, termlist_path=None, termlist_format=None, force_reload=None, tokenizer='WordPunctTokenizer'):
+	def __init__(self, termlist_file_absolute, termlist_format, word_tokenizer,  force_reload=None , pickle_directory=None ):
 		"""Loads the terms from file or pickle"""
-		"""By default, it will look for a previous pickle by the same name as the termlist_path. If force_reload is set, it will always load from file. Use this when the file has changed. If loading from file, it will automatically save loaded entities as pickle for faster (up to 20 times) loading the next time."""
+		"""By default, it will look for a previous pickle by the same name as the termlist_file_absolute. If force_reload is set, it will always load from file. Use this when the file has changed. If loading from file, it will automatically save loaded entities as pickle for faster (up to 20 times) loading the next time."""
 		
 		"""There are different formats of files to load termlists from: 
-		Make sure termlist_path and termlist_format are congruent.
 			4-tuple (termlist_format=4)
 				[0] id, [1] term, [2] type, [3] prefered form
 			6-tuple (termlist_format=6)
 				[0] original id, [1] term, [2] type, [3] prefered form, [4] resource from which it comes, [5] internal id"""
 		
-		my_path = os.path.dirname(os.path.abspath(__file__))
-		
-		# Check if user has specified a termlist to load, otherwise load default
-		if not termlist_path :
-			termlist_path = os.path.join(my_path,self.default_termlist)
-			
-		if not termlist_format :
-			termlist_format = self.default_termlist_format
-				
-		termlist_filename = os.path.split(termlist_path)[1]
-		pickles_path = os.path.join(my_path,'pickles')
+		my_directory = os.path.dirname(os.path.abspath(__file__))		
+		termlist_filename = os.path.split(termlist_file_absolute)[1]
+		pickles_directory_absolute = os.path.join(my_directory,self.pickles_directory)
 		
 		# Check if pickle with the same file name exists
-		pickle_path = os.path.join(pickles_path,termlist_filename) + '.pickle'
-		if os.path.exists(pickle_path) and not force_reload:
+		pickle_file = os.path.join(pickles_directory_absolute,termlist_filename) + '.pickle'
+		if os.path.exists(pickle_file) and not force_reload:
 			print('Found pickle with same name as specified termlist.') 
 			print('Set force_reload=1, or delete pickle if you want to load from file.')
 			
-			self.terms = self.load_termlist_from_pickle(pickle_path)
+			self.terms = self.load_termlist_from_pickle(pickle_file)
 		
 		# Load termlist from file
 		else:
-			my_tokenizer = self.get_tokenizer(tokenizer)
-			self.terms = self.load_termlist_from_file(termlist_path,termlist_format,my_tokenizer)
-			self.write_terms_to_pickle(self.terms, pickle_path)
+			self.terms = self.load_termlist_from_file(termlist_file_absolute,termlist_format,word_tokenizer)
+			self.write_terms_to_pickle(self.terms, pickle_file)
 							
 	def load_termlist_from_pickle(self,pickle_path):
 		terms = dict()
@@ -74,7 +62,7 @@ class Entity_recognition(object):
 		
 	
 		
-	def load_termlist_from_file(self,termlist_path, termlist_format, word_tokenizer):
+	def load_termlist_from_file(self,termlist_file, termlist_format, word_tokenizer):
 		# Termlist assumed to have the following format:
 		# [0] = id, [1] = term to match, [2] = type, [3] = prefered form
 		# [0] original id, [1] term, [2] type, [3] prefered form, [4] resource from which it comes, [5] internal id
@@ -84,7 +72,7 @@ class Entity_recognition(object):
 		start = time.time()
 		print("Loading terms from file now.")
 		
-		with open(termlist_path) as tsv:
+		with open(termlist_file) as tsv:
 			for line in csv.reader(tsv, delimiter="\t"):
 								
 				term_id = line[0] if termlist_format==4 else line[5]
@@ -114,111 +102,95 @@ class Entity_recognition(object):
 			pickle.dump(terms,file)
 		print('Written terms to pickle at ', filename)
 	
-	def recognise_entities(self,words,terms=None):
+	def recognise_entities(self,sentences):
 		"""Will go through the words and try to match them to the terms"""
 		"""Words is expected in this format: (word, start position, end position)"""
 		"""Returns a list of found entities"""
 		
 		entities = list()
 		
-		if not terms:
-			terms = self.terms
-		
 		entity_id = -1
 		
-		# using a C-style loop for easy peeking at words following the current one
-		for i in range(len(words)):
-			
-			word = words[i][0].lower()
-			if word in terms:
-								
-				entity_id = entity_id + 1
+		for words in sentences:
+			# using a C-style loop for easy peeking at words following the current one
+			for i in range(len(words)):
 				
-				# check if multiple entries for first word in terms
-				
-				for entry in terms[word]:
-										
-					# remember, entry[4] is the number of words the NE has
-					# so if it is > 1, we have a multi-word entry and we loop through every word
-					if entry[4] > 1:
-						matched = True
-						match_length = 0
-						
-						# entry[0] is the list of tokens in the multi-word NE
-						for j in range(len(entry[0])):
-							if not matched :
-								break
-							
-							if i+j > ( len(words) - 1 ) :
-								matched = False
-								break
-								
-							if entry[0][j] != words[i+j][0]:
-								matched = False
-							else:
-								match_length = match_length + len(entry[0][j])
-						
-						if matched:
-							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i+j-1][2]))
-							# TODO: one could also set i to skip the words so far identified as a multi-word entry. But this might lead to some nested / parallel multi-word NEs to be missed
+				word = words[i][0].lower()
+				if word in self.terms:
+									
+					entity_id = entity_id + 1
 					
-					else:
-					# else it's a single word NE that was found	
-						entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i][2] ) )
-		
+					# check if multiple entries for first word in terms
+					
+					for entry in self.terms[word]:
+											
+						# remember, entry[4] is the number of words the NE has
+						# so if it is > 1, we have a multi-word entry and we loop through every word
+						if entry[4] > 1:
+							matched = True
+							match_length = 0
+							
+							# entry[0] is the list of tokens in the multi-word NE
+							for j in range(len(entry[0])):
+								if not matched :
+									break
+								
+								if i+j > ( len(words) - 1 ) :
+									matched = False
+									break
+									
+								if entry[0][j] != words[i+j][0]:
+									matched = False
+								else:
+									match_length = match_length + len(entry[0][j])
+							
+							if matched:
+								entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i+j-1][2]))
+								# TODO: one could also set i to skip the words so far identified as a multi-word entry. But this might lead to some nested / parallel multi-word NEs to be missed
+						
+						else:
+						# else it's a single word NE that was found	
+							entities.append( ( entry[0] , entry[1] , entry[2] , entry[3] , entry[4] , words[i][1] , words[i][2] ) )
+			
 		return entities
 		
-# TODO: write export functions for found entities
-
-	def get_tokenizer(self, tokenizer):
-		""""Add other supported tokenizers here"""
+	def export_tsv(self, id, entities, output_directory):
 		
-		if tokenizer == 'WordPunctTokenizer':
-			word_tokenizer = WordPunctTokenizer()
+		my_directory = self.make_output_subdirectory(output_directory)		
+		my_file = os.path.join(my_directory, id + '.tsv')
 		
-		if tokenizer == 'PunktWordTokenizer':
-			from nltk.tokenize import PunktWordTokenizer
-			word_tokenizer = PunktWordTokenizer()
-			
-		if not word_tokenizer:
-			print("Entity recognition: ", tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
-			word_tokenizer = WordPunctTokenizer()
-			
-		return word_tokenizer
-		
-	def export_tsv(self, id, entities):
-		
-		my_parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-		my_directory = os.path.join(my_parent_directory, 'output', 'entity_recognition')
-		
-		if not os.path.exists(my_directory):
-			os.makedirs(my_directory)
-			
-		my_path = os.path.join(my_directory, id + '.tsv')
-		
-		with open(my_path,'w') as f:
+		with open(my_file,'w') as f:
 			writer = csv.writer(f, delimiter='\t')
 			for entity in entities:
 				writer.writerow(entity)
 		
-	def export_tsv_legacy_format(self, id, entities):
-			
-			my_parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-			my_directory = os.path.join(my_parent_directory, 'output', 'entity_recognition')
-			
-			if not os.path.exists(my_directory):
-				os.makedirs(my_directory)
-				
-			my_path = os.path.join(my_directory, id + '.tsv')
-			
-			with open(my_path,'w') as f:
-				writer = csv.writer(f, delimiter='\t')
-				writer.writerow(['DOCUMENT ID', 'TYPE' , 'START POSITION' , 'END POSITION' , 'MATCHED TERM' , 'PREFERRED FORM' , 'TERM ID' , 'ORIGIN WITHIN DOCUMENT' , 'SENTENCE'])
-				for entity in entities:
-					
-					matched_term = ' '.join(entity[0])
-					row = [ id , entity[2] , entity[5] , entity[6] , matched_term , entity[3] , entity[1] , 'origin' , 'sentence']
-					
-					writer.writerow(row)	
-			
+	def export_tsv_legacy_format(self, id, entities, output_directory):
 		
+		my_directory = self.make_output_subdirectory(output_directory)		
+		my_file = os.path.join(my_directory, id + '.tsv')
+		
+		with open(my_file,'w') as f:
+			writer = csv.writer(f, delimiter='\t')
+			writer.writerow(['DOCUMENT ID', 'TYPE' , 'START POSITION' , 'END POSITION' , 'MATCHED TERM' , 'PREFERRED FORM' , 'TERM ID' , 'ORIGIN WITHIN DOCUMENT' , 'SENTENCE'])
+			for entity in entities:
+				
+				matched_term = ' '.join(entity[0])
+				row = [ id , entity[2] , entity[5] , entity[6] , matched_term , entity[3] , entity[1] , 'origin' , 'sentence']
+				
+				writer.writerow(row)	
+			
+	def make_output_subdirectory(self,output_directory):
+		my_directory = os.path.join(output_directory, 'entity_recognition')
+		return self.make_directory(my_directory)
+							
+	def make_directory(self,directory):
+		"""Create folder if it doesn't exist yet"""
+		if not os.path.exists(directory):
+			try:
+				os.makedirs(directory)
+				return directory
+			except():
+				print('Could not create directory ', directory)
+				return None
+		else:
+			return directory

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os.path
-
+import csv
 
 class Configuration(object):
 	"""Stores and processed configuration for the pipeline. The user only needs to change class variables; the rest can be ignored."""
@@ -10,7 +10,7 @@ class Configuration(object):
 	# VARIABLES TO BE CHANGED BY THE USER
 	
 	# Where to load PMIDs from for processing
-	# Set pmid_mode to ABSOLUTE or RELATIVE (to control.py) to load from pmid_file
+	# Set pmid_mode to ABSOLUTE or RELATIVE (to main.py) to load from pmid_file
 	# Set it to ID to load user_supplied_pmids, which is a list of strings
 	pmid_mode = 'RELATIVE'
 	pmid_file = 'pmids/test_pmids.txt'
@@ -19,7 +19,7 @@ class Configuration(object):
 	# this is the email that is used to download from Pubmed.
 	pubmed_email = 'ncolic@gmail.com'
 	
-	# this folder will be used by all modules as output directory. Again, output_directory_mode can be RELATIVE to control.py or ABSOLUTE
+	# this folder will be used by all modules as output directory. Again, output_directory_mode can be RELATIVE to main.py or ABSOLUTE
 	output_directory = 'output'
 	output_directory_mode = 'RELATIVE'
 
@@ -29,6 +29,14 @@ class Configuration(object):
 	word_tokenizer = 'WordPunctTokenizer'
 	sentence_tokenizer = 'PunktSentenceTokenizer'
 	
+	# List of entities to be used for entity recognition. 
+	# termlist_mode can be RELATIVE (to main.py) or ABSOLUTE
+	# termlist_format specified number of columns that termlist has. Set to none to detect automatically, this, however, might slow down execution slightly.
+	termlist_file = 'entity_recognition/termlists/ontogene_terms_C_D_F03.tsv'
+	termlist_mode = 'RELATIVE'
+	termlist_format = 6
+
+	
 	# INTERNAL VARIABLES
 	# These will be overwritten by the constructor
 	pmids = list()
@@ -36,6 +44,7 @@ class Configuration(object):
 	output_directory_absolute = None
 	word_tokenizer_object = None
 	sentence_tokenizer_object = None
+	termlist_file_absolute = None
 
 	
 	def __init__(self, user_supplied_pmids=None):
@@ -47,6 +56,7 @@ class Configuration(object):
 		self.load_pmids()
 		self.make_output_directory()
 		self.create_tokenizer_objects()
+		self.set_termlist()
 			
 	
 	def load_pmids(self):
@@ -104,6 +114,23 @@ class Configuration(object):
 		"""Here you can add supported sentence tokenizers."""
 		from nltk.tokenize import PunktSentenceTokenizer
 		self.sentence_tokenizer_object = PunktSentenceTokenizer()
-	
+		
+	def set_termlist(self):
+		if self.termlist_mode == 'RELATIVE' and self.termlist_file:
+			my_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+			self.termlist_file_absolute = os.path.join(my_directory,self.termlist_file)
+		
+		elif self.termlist_mode == 'ABSOLUTE' and self.termlist_file and os.path.exists(self.termlist_file):
+				self.termlist_file_absolute = self.termlist_file
+		
+		else:
+			print('No valid termlist provided in config/config.py')
+		
+		if not self.termlist_format:
+			with open(self.termlist_file_absolute) as tsv:
+				for line in csv.reader(tsv, delimiter="\t"):
+					self.termlist_format = len(line) #this is the first line, then we
+					break
+		
 	        
 		       

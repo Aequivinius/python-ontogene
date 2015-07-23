@@ -36,21 +36,37 @@ class Text_processing(object):
 	def tokenize_sentences(self, text):
 		return self.sentence_tokenizer.tokenize(text)
 	
-	# takes text as input	
+	# to return two values doesn't make sense at all. so I'd rather have two functions, the first one returns tokens per sentences, and a flattify function	
 	def tokenize_words(self, text):
+		"""Returns a list of tokenizes sentences, which in turn are a list of token tuples. Use flatify() to get a flat list of tokens.
+		Token tuples: [0] token text, [1] begin position, [2] end position, [3] sentence number"""
 		sentences = self.tokenize_sentences(text)
-		tokens = list()
+		tokens_per_sentence = list()
 		sentence_offset = 0
 		
+		sentence_counter = 0
 		for sentence in sentences:
+			sentence_tokens = list()
 			for token in self.word_tokenizer.span_tokenize(sentence):
 				# save actual token together with it's positions
 				begin = token[0] + sentence_offset
 				end = token[1] + sentence_offset
-				tokens.append((text[begin:end],begin,end))
+				token_tuple = (text[begin:end],begin,end,sentence_counter)
+				sentence_tokens.append(token_tuple)
+				
+			tokens_per_sentence.append(sentence_tokens)
 			
+			sentence_counter = sentence_counter + 1
 			sentence_offset = sentence_offset + len(sentence) + 1
 		
+		return tokens_per_sentence
+	
+	def flatify(self, tokens_per_sentence):
+		tokens = list()
+		
+		for sentence in tokens_per_sentence:
+			for token in sentence:
+				tokens.append(token)
 		return tokens
 	
 	def pos_tag(self, span_tokens):
@@ -75,19 +91,12 @@ class Text_processing(object):
 		
 		return span_tagged_tokens
 			
-	# based on Osman's code	
-	# TODO change this output directory to be within the text_processing directory
-	# TODO might be broken because tokens' format has changed
-	
-	# TODO: fuck, the format before was a list of sentences, of words. now I have moved to a plain format, I have no way of telling in which sentence they are. so I need to save sentence ID too etc. - or go back to the twice nested format.
-	def export_tokens_to_xml(self,tokens,output_directory,mode=None):
+	def export_tokens_to_xml(self,id, tokens_per_sentence,output_directory,mode=None):
 		import xml.etree.ElementTree as ET
 		
 		sentence_number = 0
-		word_position = 0
-		
 		root = ET.Element("root")
-		for sentence in self.tagged:
+		for sentence in tokens_per_sentence:
 			S = ET.SubElement(root,"S")
 			S.set('i',str(sentence_number))
 			sentence_number = sentence_number + 1;
@@ -95,36 +104,32 @@ class Text_processing(object):
 			for word in sentence:
 				W = ET.SubElement(S,"W")
 				W.text = word[0]
-				W.set('pos',word[1])
-				
-				# find the starting position while skipping space characters
-				while self.text[word_position:(word_position + len(word[0]))] != word[0]:
-					word_position = word_position + 1
-					if word_position > len(self.text):
-						break
 						
 				# Create the o1 and o2 attributes for the starting and ending position of the word
-				W.set('o1', str(word_position))
-				word_position = word_position + len(word[0])
-				W.set('o2', str(word_position))
+				W.set('end', str(word[2]))
+				W.set('begin', str(word[1]))
+				
 		
 		# prepare printing
 		my_directory = self.make_output_subdirectory(output_directory)
 		
 		# write using etree
-		file_name = os.path.join(my_directory, self.id + '.xml')
+		file_name = os.path.join(my_directory, id + '.xml')
 		if ( mode == 'both' or mode == 'normal'):
 			with open(file_name,'wb') as f:
 				ET.ElementTree(root).write(f,encoding="UTF-8",xml_declaration=True)
 		
 		# Pretty Print
-		file_name = os.path.join(my_directory, self.id + '_pretty.xml')
+		file_name = os.path.join(my_directory, id + '_pretty.xml')
 		if ( mode == 'both' or mode == 'pretty' or mode == None ) :
 			from xml.dom import minidom
 			
 			pretty_article = minidom.parseString(ET.tostring(root, 'utf-8')).toprettyxml(indent="	")
 			with open(file_name,'w') as f:
 				f.write(pretty_article)
+	
+	def export_tagged_tokens_to_xml(self):
+		pass
 				
 	def make_output_subdirectory(self,output_directory_absolute):
 		my_directory = os.path.join(output_directory_absolute, 'text_processing')

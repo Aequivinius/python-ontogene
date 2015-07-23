@@ -4,12 +4,12 @@ The goal of this project is to set up a pipeline to extract relations between pr
 
 USAGE
 =====
-The pipeline is run using 'python3 control.py'. Make sure you consult config/config.py to change configuration of the pipeline.
+The pipeline is run using 'python3 main.py'. Make sure you consult config/config.py to change configuration of the pipeline.
 
 
 STRUCTURE
 =========
-The pipeline has several stages, each of which is its own module. The pipeline is then run from control.py.
+The pipeline has several stages, each of which is its own module. The pipeline is then run from main.py.
 
 1. import
 	This module allows downloading of articles from PubMed via Biopython, or to read them from a file
@@ -25,7 +25,7 @@ CHANGES
 * VII
 	* added config file
 * VI: low level text processing
-	* this class used to store the text and the tokens as a class variable. Now, however, this falls into the responsibility of control.py. The tp class will only store the tokenizer, and return tokenized text from the tokenize_words() function.
+	* this class used to store the text and the tokens as a class variable. Now, however, this falls into the responsibility of main.py. The tp class will only store the tokenizer, and return tokenized text from the tokenize_words() function.
 
 
 TO DO
@@ -41,7 +41,7 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 		
 		* don't spend too much time on file_import.py
 	* a statistics function that appends to output/statistics_date_time.txt
-		* might be best done in control.py
+		* might be best done in main.py
 	* add plain text export
 
 * text import
@@ -52,6 +52,7 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* add export functions (json, plain text)
 	* add xml, json, plain text for pos-tagged, too
 	* tsv?
+	* also change structure of tagged words to reflect sentence structure
 	
 * entity recognition
 	* export function

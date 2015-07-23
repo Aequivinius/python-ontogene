@@ -47,7 +47,7 @@ class Pubmed_import(object):
 
 	def download_pmid_data(self, pubmed_email, options=None, args=None):
 
-		if entrez_email == None:
+		if pubmed_email == None:
 			print('DOWNLOAD OF NEW DATA CANNOT BE COMPLETED, PLEASE GIVE YOUR EMAIL IN CONFIG.PY.')
 			return None
 
