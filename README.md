@@ -38,13 +38,20 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 			* especially in regards to output directory
 		* test it with the PMIDs in the pmids directory
 		* get rid of default values as much as possible
+		
 		* don't spend too much time on file_import.py
 	* a statistics function that appends to output/statistics_date_time.txt
 		* might be best done in control.py
 	* add plain text export
+
+* text import
+	* plain text export
+	* check file_import
 	
 * text processing
-	* add export functions
+	* add export functions (json, plain text)
+	* add xml, json, plain text for pos-tagged, too
+	* tsv?
 	
 * entity recognition
 	* export function
@@ -72,3 +79,5 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
+
+go through it so I can merge asap, then we can look at file_import (briefly!), and do the rest (top to bottom)

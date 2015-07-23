@@ -3,16 +3,20 @@
 
 # Nico Colic, June 2015
 
-from nltk.tokenize import WordPunctTokenizer, PunktSentenceTokenizer
 import nltk
+import os.path
+
 
 class Text_processing(object):
 	"""Allows to do tokenisation and PoS tagging on a given text"""
 	"""For now, needs manual downloading in NLTK of tokenizers/punkt and maxent_treebank_pos_tagger before it works"""
 	"""Structure of tokens: [0]: token, [1]: start position, [2]: end position"""
 	"""Structure of tagged tokens: same as tokens, and [3] is tag"""
+	
+	sentence_tokenizer = None
+	word_tokenizer = None
 		
-	def __init__(self, tokenizer='WordPunctTokenizer'):
+	def __init__(self, word_tokenizer, sentence_tokenizer):
 		
 		# TODO: this code fragment should automatically download nltk models if they haven't been downloaded yet,
 		# but it doesn't seem to work. For now needs manual download
@@ -26,21 +30,9 @@ class Text_processing(object):
 		# except LookupError:
 		# 	nltk.download('maxent_treebank_pos_tagger')
 
-		self.sentence_tokenizer = PunktSentenceTokenizer()
-		self.word_tokenizer = None
+		self.sentence_tokenizer = sentence_tokenizer
+		self.word_tokenizer = word_tokenizer
 
-		# Here you can add supported tokenizers. Note that it must implement the span_tokenize method
-		if tokenizer == 'WordPunctTokenizer':
-			self.word_tokenizer = WordPunctTokenizer()
-				
-		if tokenizer == 'PunktWordTokenizer':
-			from nltk.tokenize import PunktWordTokenizer
-			self.word_tokenizer = PunktWordTokenizer()
-		
-		if not self.word_tokenizer:
-			print("Text processing: ", tokenizer, " you specified is not supported. Use default option or add in Text_processing.__init__(). Using default WordPunctTokenizer.")
-			self.word_tokenizer = WordPunctTokenizer()
-			
 	def tokenize_sentences(self, text):
 		return self.sentence_tokenizer.tokenize(text)
 	
@@ -86,18 +78,10 @@ class Text_processing(object):
 	# based on Osman's code	
 	# TODO change this output directory to be within the text_processing directory
 	# TODO might be broken because tokens' format has changed
-	def export_xml(self,output_directory='aq_nltk_tagged_files',mode='both'):
+	
+	# TODO: fuck, the format before was a list of sentences, of words. now I have moved to a plain format, I have no way of telling in which sentence they are. so I need to save sentence ID too etc. - or go back to the twice nested format.
+	def export_tokens_to_xml(self,tokens,output_directory,mode=None):
 		import xml.etree.ElementTree as ET
-		import os.path
-		
-		# create folder if it doesn't exist yet
-		if not os.path.exists(output_directory):
-			try:
-				os.makedirs(output_directory)
-			except():
-				print('Could not create directory', output_directory)
-				return None
-
 		
 		sentence_number = 0
 		word_position = 0
@@ -124,17 +108,36 @@ class Text_processing(object):
 				word_position = word_position + len(word[0])
 				W.set('o2', str(word_position))
 		
+		# prepare printing
+		my_directory = self.make_output_subdirectory(output_directory)
+		
 		# write using etree
-		file_name = os.path.join(output_directory, self.id + '.xml')
-		if ( mode == 'both' or mode == 'normal' or mode == None ):
+		file_name = os.path.join(my_directory, self.id + '.xml')
+		if ( mode == 'both' or mode == 'normal'):
 			with open(file_name,'wb') as f:
 				ET.ElementTree(root).write(f,encoding="UTF-8",xml_declaration=True)
 		
 		# Pretty Print
-		file_name = os.path.join(output_directory, self.id + '_pretty.xml')
-		if ( mode == 'both' or mode == 'pretty' ) :
+		file_name = os.path.join(my_directory, self.id + '_pretty.xml')
+		if ( mode == 'both' or mode == 'pretty' or mode == None ) :
 			from xml.dom import minidom
 			
 			pretty_article = minidom.parseString(ET.tostring(root, 'utf-8')).toprettyxml(indent="	")
 			with open(file_name,'w') as f:
 				f.write(pretty_article)
+				
+	def make_output_subdirectory(self,output_directory_absolute):
+		my_directory = os.path.join(output_directory_absolute, 'text_processing')
+		return self.make_directory(my_directory)
+						
+	def make_directory(self,directory):
+		"""Create folder if it doesn't exist yet"""
+		if not os.path.exists(directory):
+			try:
+				os.makedirs(directory)
+				return directory
+			except():
+				print('Could not create directory ', directory)
+				return None
+		else:
+			return directory

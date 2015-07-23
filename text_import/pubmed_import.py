@@ -12,7 +12,7 @@ import time
 # A file loaded as pickle from a PubMed dump in Biopython format
 class Pubmed_import(object):
 	"""Downloads file from Pubmed if it has not been downloaded before, otherwise returns previously downloaded version"""
-	"""Use get_abstract() or get_whole_abstact() for title and abstract"""
+	"""Use get_abstract() or get_whole_abstract_minus_mesh() for title and abstract"""
 	
 	dump_directory = 'dumps'
 	
@@ -153,53 +153,59 @@ class Pubmed_import(object):
 		pmid_medline = self.text[0][u'MedlineCitation']
 		
 		# BUILDING THE TREE
-		article = ET.Element('article')
-		article_attributes = {	'id':'',
-							 	'pmid':pmid_medline[u'PMID'],
-							 	'type':pmid_medline[u'Article'][u'PublicationTypeList'][0],
-							 	'year':pmid_medline[u'DateCompleted'][u'Year']
-								};
-		if u'ISSN' in pmid_medline[u'Article'][u'Journal']:
-			article_attributes['issn'] = pmid_medline[u'Article'][u'Journal'][u'ISSN']
-		for attribute, value in article_attributes.items():
-			article.set(attribute,value)
+		try:
+			article = ET.Element('article')
+			article_attributes = {	'id':'',
+								 	'pmid':pmid_medline[u'PMID'],
+								 	'type':pmid_medline[u'Article'][u'PublicationTypeList'][0],
+								 	'year':pmid_medline[u'DateCompleted'][u'Year']
+									};
+			if u'ISSN' in pmid_medline[u'Article'][u'Journal']:
+				article_attributes['issn'] = pmid_medline[u'Article'][u'Journal'][u'ISSN']
+			for attribute, value in article_attributes.items():
+				article.set(attribute,value)
+			
+			article_title = ET.SubElement(article,'article_title')
+			article_title.set('id','')
+			article_title.set('type','Title')
+			article_title.text = pmid_medline[u'Article'][u'ArticleTitle']
+			
+			abstract = ET.SubElement(article,'abstract')
+			abstract.set('id','')
+			abstract.set('type','')
+			abstract.text = pmid_medline[u'Article'][u'Abstract'][u'AbstractText'][0]
+			
+			if u'ChemicalList' in pmid_medline:
+				chemicals = ET.SubElement(article,'chemicals')
+				chemicals.set('id','')
+				for chemical in pmid_medline[u'ChemicalList']:
+					c = ET.SubElement(chemicals, 'chemical')
+					c.set('UI',chemical[u'NameOfSubstance'].attributes[u'UI'])
+					c.set('RegistryNumber',chemical[u'RegistryNumber'])
+					c.text = chemical[u'NameOfSubstance']
+			
+			mesh = ET.SubElement(article,'mesh')
+			mesh.set('id','')
+			for mesh_element in pmid_medline[u'MeshHeadingList']:
+				m = ET.SubElement(mesh, 'm')
+				m.text = mesh_element[u'DescriptorName']
+				m.set('UI',mesh_element[u'DescriptorName'].attributes[u'UI'])
+				major_topic = mesh_element[u'DescriptorName'].attributes[u'MajorTopicYN']
+				m.set('MajorTopicYN',major_topic)
+			
+				qualifier_name = mesh_element[u'QualifierName']
+				if qualifier_name != []:
+					m.set('qualifier_name',qualifier_name[0])
+					m.set('qualifier_name_UI',qualifier_name[0].attributes[u'UI'])
+					qualifier_name_major_topic = qualifier_name[0].attributes[u'MajorTopicYN']
+					if major_topic != qualifier_name_major_topic:
+						m.set('qualifier_name_major_topic',qualifier_name_major_topic)
 		
-		article_title = ET.SubElement(article,'article_title')
-		article_title.set('id','')
-		article_title.set('type','Title')
-		article_title.text = pmid_medline[u'Article'][u'ArticleTitle']
-		
-		abstract = ET.SubElement(article,'abstract')
-		abstract.set('id','')
-		abstract.set('type','')
-		abstract.text = pmid_medline[u'Article'][u'Abstract'][u'AbstractText'][0]
-		
-		if u'ChemicalList' in pmid_medline:
-			chemicals = ET.SubElement(article,'chemicals')
-			chemicals.set('id','')
-			for chemical in pmid_medline[u'ChemicalList']:
-				c = ET.SubElement(chemicals, 'chemical')
-				c.set('UI',chemical[u'NameOfSubstance'].attributes[u'UI'])
-				c.set('RegistryNumber',chemical[u'RegistryNumber'])
-				c.text = chemical[u'NameOfSubstance']
-		
-		mesh = ET.SubElement(article,'mesh')
-		mesh.set('id','')
-		for mesh_element in pmid_medline[u'MeshHeadingList']:
-			m = ET.SubElement(mesh, 'm')
-			m.text = mesh_element[u'DescriptorName']
-			m.set('UI',mesh_element[u'DescriptorName'].attributes[u'UI'])
-			major_topic = mesh_element[u'DescriptorName'].attributes[u'MajorTopicYN']
-			m.set('MajorTopicYN',major_topic)
-		
-			qualifier_name = mesh_element[u'QualifierName']
-			if qualifier_name != []:
-				m.set('qualifier_name',qualifier_name[0])
-				m.set('qualifier_name_UI',qualifier_name[0].attributes[u'UI'])
-				qualifier_name_major_topic = qualifier_name[0].attributes[u'MajorTopicYN']
-				if major_topic != qualifier_name_major_topic:
-					m.set('qualifier_name_major_topic',qualifier_name_major_topic)
-		
+		except LookupError as error:
+			print('Tree could not be build, possibly because Pubmed data is in an unexpected format.')
+			print(error)
+			return
+						
 		# preparing writing to file
 		my_directory = self.make_output_subdirectory(output_directory)
 		
@@ -226,15 +232,6 @@ class Pubmed_import(object):
 		file_name = os.path.join(my_directory, self.pmid + '.json')
 		with open(file_name,'w') as f:
 			f.write(	json.dumps(self.text[0], indent=2, separators=(',', ':')))
-			
-	def make_directory(self,directory):
-		"""Create folder if it doesn't exist yet"""
-		if not os.path.exists(directory):
-			try:
-				os.makedirs(directory)
-			except():
-				print('Could not create directory', directory)
-				return None
 				
 	def get_absolute_directory(self,directory):
 		my_directory = os.path.dirname(os.path.abspath(__file__))
@@ -245,6 +242,7 @@ class Pubmed_import(object):
 		return self.make_directory(my_directory)
 						
 	def make_directory(self,directory):
+		"""Create folder if it doesn't exist yet"""
 		if not os.path.exists(directory):
 			try:
 				os.makedirs(directory)

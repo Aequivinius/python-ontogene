@@ -23,14 +23,19 @@ class Configuration(object):
 	output_directory = 'output'
 	output_directory_mode = 'RELATIVE'
 
-	# Tokenizer used in text_processing and for entity_recognition
-	tokenizer = 'WordPunctTokenizer'
+	# Tokenizers used in text_processing and for entity_recognition
+	#	Currently, word_tokenizer can be WordPunctTokenizer or PunktWordTokenizer
+	#	sentence_tokenizer currently can only be PunktSentenceTokenizer
+	word_tokenizer = 'WordPunctTokenizer'
+	sentence_tokenizer = 'PunktSentenceTokenizer'
 	
 	# INTERNAL VARIABLES
 	# These will be overwritten by the constructor
 	pmids = list()
 	pmid_file_absolute = None
 	output_directory_absolute = None
+	word_tokenizer_object = None
+	sentence_tokenizer_object = None
 
 	
 	def __init__(self, user_supplied_pmids=None):
@@ -41,6 +46,7 @@ class Configuration(object):
 		
 		self.load_pmids()
 		self.make_output_directory()
+		self.create_tokenizer_objects()
 			
 	
 	def load_pmids(self):
@@ -76,7 +82,28 @@ class Configuration(object):
 			try:
 				os.makedirs(self.output_directory_absolute)
 			except():
-				print('Could not create directory ', absolute_output_directory)
+				print('Could not create directory ', self.output_directory_absolute)
 				return None
+	
+	def create_tokenizer_objects(self):
+		self.create_word_tokenizer_object()
+		self.create_sentence_tokenizer_object()
+		
+	
+	def create_word_tokenizer_object(self):
+		"""Here you can add supported word tokenizers. Note that it must implement the span_tokenize method"""
+		if self.word_tokenizer == 'WordPunctTokenizer':
+			from nltk.tokenize import WordPunctTokenizer 
+			self.word_tokenizer_object = WordPunctTokenizer()
+				
+		if self.word_tokenizer == 'PunktWordTokenizer':
+			from nltk.tokenize import PunktWordTokenizer
+			self.word_tokenizer_object = PunktWordTokenizer()
+		
+	def create_sentence_tokenizer_object(self):
+		"""Here you can add supported sentence tokenizers."""
+		from nltk.tokenize import PunktSentenceTokenizer
+		self.sentence_tokenizer_object = PunktSentenceTokenizer()
+	
 	        
 		       
