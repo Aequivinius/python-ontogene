@@ -33,13 +33,7 @@ TO DO
 The pipeline is currently developed up to stage 3, that is, entity recognition. Besides the development of the following stages, the following things need doing:
 
 * general
-	* go through the entire code:
-		* make it work with the config.py
-			* especially in regards to output directory
-		* test it with the PMIDs in the pmids directory
-		* get rid of default values as much as possible
-		
-		* don't spend too much time on file_import.py
+	* don't spend too much time on file_import.py
 	* a statistics function that appends to output/statistics_date_time.txt
 		* might be best done in main.py
 	* add plain text export
