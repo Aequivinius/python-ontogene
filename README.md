@@ -33,6 +33,7 @@ TO DO
 The pipeline is currently developed up to stage 3, that is, entity recognition. Besides the development of the following stages, the following things need doing:
 
 * general
+	* compare to the tsv output of Fabio's pipeline
 	* don't spend too much time on file_import.py
 	* a statistics function that appends to output/statistics_date_time.txt
 		* might be best done in main.py
@@ -52,13 +53,16 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* export function
 		* add sentence number and origin within document (abstract, title) to tsv (like in the script on kitt)
 	* make sure dictionary is loaded correctly, there seem to be too few entries
-	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
 	
 * parsing
 	* read up on stanford parser
 		* interface it
 	* check malt parser
 	* other parsers?
+	
+* complex questions
+	* paralellisation
+	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
 	
 * project
 	* check out shpinx
@@ -74,5 +78,3 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
-
-go through it so I can merge asap, then we can look at file_import (briefly!), and do the rest (top to bottom)

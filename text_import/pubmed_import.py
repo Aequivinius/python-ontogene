@@ -33,8 +33,12 @@ class Pubmed_import(object):
 		
 		if not self.pmid in os.listdir(self.dump_directory_absolute):
 			print('ATTEMPT TO DOWNLOAD DATA FOR', self.pmid)
-			self.download_pmid_data(pubmed_email, options=options, args=args)
-			time.sleep(1) # to prevent too many downloads to pmid, which will get you blocked
+			try:
+				self.download_pmid_data(pubmed_email, options=options, args=args)
+			except:
+				print('Couldn\'t download ' , pmid)
+			finally:
+				time.sleep(1) # to prevent too many downloads to pmid, which will get you blocked
 			print('DOWNLOADED AND WRITTEN TO FILE')
 
 		try:
