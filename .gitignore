@@ -9,3 +9,6 @@ entity_recognition/pickles/*
 entity_recognition/pickles
 comparison
 comparison/*
+nilsimsa/nilsimsa/test_data
+nilsimsa/nilsimsa/test_data/*
+nilsimsa/nilsimsa/test.py
