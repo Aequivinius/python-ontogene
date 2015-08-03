@@ -57,6 +57,7 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 * entity recognition
 	* export function
 		* add sentence number and origin within document (abstract, title) to tsv (like in the script on kitt)
+		* BioC output
 	* make sure dictionary is loaded correctly, there seem to be too few entries
 	
 * parsing
@@ -86,3 +87,5 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
+
+okay, i started writing the report, tomorrow I can write about nilsimsa in it. 

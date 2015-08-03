@@ -1,0 +1,7 @@
+https://metacpan.org/pod/Digest::Nilsimsa
+> “A nilsimsa signature is a statistic of n-gram occurance in a piece of text”
+
+There are 3 papers that I can read, and then I can take it from there:
+* An Open Digest-based Technique for Spam Detection by Damiani
+* TLSH - A Locality Sensitive Hash by Oliver
+* Identifying almost identical files using context triggered piecewise hashing by Kornblum
