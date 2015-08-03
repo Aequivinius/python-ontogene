@@ -7,3 +7,5 @@ text_import/dumps/*
 text_import/dumps
 entity_recognition/pickles/*
 entity_recognition/pickles
+comparison
+comparison/*

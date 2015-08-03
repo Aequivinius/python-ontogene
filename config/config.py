@@ -14,7 +14,7 @@ class Configuration(object):
 	# Set it to ID to load user_supplied_pmids, which is a list of strings
 	pmid_mode = 'RELATIVE'
 	pmid_file = 'pmids/test_pmids.txt'
-	user_supplied_pmids = [ '11111111' ]
+	user_supplied_pmids = [ ]
 	
 	# this is the email that is used to download from Pubmed.
 	pubmed_email = 'ncolic@gmail.com'

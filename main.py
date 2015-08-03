@@ -38,8 +38,8 @@ for pmid, pubmed_article in pubmed_articles.items	():
 # STAGE 3: entity recognition
 # How to use: first create an object Entity_recognition, which takes as an argument a list of NEs to be found.
 # Then use recognise_entities, giving the tokens of the text as a list, the funciton will return a list of found entities
-# from entity_recognition.entity_recognition import Entity_recognition as er
-# 
+from entity_recognition.entity_recognition import Entity_recognition as er
+
 my_er = er(my_config.termlist_file_absolute,my_config.termlist_format,my_config.word_tokenizer_object)
 entities = list()
 for pmid, tokenized_text in tokens.items():
