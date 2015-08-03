@@ -49,6 +49,11 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* tsv?
 	* also change structure of tagged words to reflect sentence structure
 	
+* Nilsimsa
+	* integrate in pipeline
+	* read up if there's a good way to sort / buckets
+	* other algorithms
+	
 * entity recognition
 	* export function
 		* add sentence number and origin within document (abstract, title) to tsv (like in the script on kitt)
@@ -63,12 +68,15 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 * complex questions
 	* paralellisation
 	* find entries like 'protein'. Because the internal representation of the NEs to be found is a dictionary with the first word of the NE to be found as key; this leads to some entries having a huge list of potential NEs pointed to by a single first word. We can possibly find more efficient solutions to deal with this; possibly trees.
+
+* report
+	* set up latex
+	* install latex diff
 	
 * project
 	* check out shpinx
 	* read a python best practises book
 	* do some more prolog
-	* start to write a report
 
 
 CREDITS
