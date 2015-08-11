@@ -1,6 +1,7 @@
 .DS_Store
 entity_recognition/termlists/ontogene_terms_C_D_F03.tsv
 */__pycache__/
+*/__pycache__/*
 output/*
 output
 text_import/dumps/*
@@ -9,6 +10,6 @@ entity_recognition/pickles/*
 entity_recognition/pickles
 comparison
 comparison/*
-nilsimsa/nilsimsa/test_data
-nilsimsa/nilsimsa/test_data/*
-nilsimsa/nilsimsa/test.py
+similarity/nilsimsa/test_data
+similarity/nilsimsa/test_data/*
+similarity/nilsimsa/test.py

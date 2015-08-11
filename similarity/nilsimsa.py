@@ -7,6 +7,9 @@ import os.path
 from os import listdir
 import pickle
 import time
+import shutil
+
+import random
 
 """Call as: python3 my_nilsimsa.py input_directory output_folder output-format
    Output format can be 'hex', can be 'decimal', 'both' or none (in which case it will output hex)"""
@@ -15,7 +18,7 @@ def find_similar(needle,haystack):
 	similars = list()
 	for key , value in haystack.items():
 		score = nilsimsa.compare_digests(needle, value, is_hex_1=False, is_hex_2=False, threshold=24 ) 
-		if score > 24:
+		if score > 54:
 			similars.append(key)
 	return similars
 	
@@ -60,6 +63,7 @@ except:
 # PROCESSING
 hex_values = dict()
 decimal_values = dict()
+texts = dict()
 
 start = time.time()
 print("Commencing processing of " + str(len(files)) + " files.")
@@ -73,7 +77,7 @@ for my_file in files:
 		hex_values[my_file] = my_nilsimsa.hexdigest()
 	
 	if output_decimal:
-		decimal_values[my_file] = my_nilsimsa.digest()
+		decimal_values[my_file] = my_nilsimsa.digest
 
 finish = time.time()
 print("Finished processing files in " + str( finish - start ) + " seconds.")
@@ -100,9 +104,20 @@ if output_decimal:
 
 print("Written output files to " + output_directory)
 
-		
-# find_similar(my_nilsimsas['11334364.txt'], my_nilsimsas)
-	
-# To compare two hex values, use the following function. digest_1 and _2 will be the hex values, threshold can be set to a value between -128 and 128, which will abort comparison if difference of the two digests is below it, thus speeding up comparison
 
-# nilsimsa.compare_digests(digest_1, digest_2, is_hex_1=True, is_hex_2=True, threshold=None)
+
+
+for i in range(10):
+    my_random = random.choice(list(decimal_values.keys()))
+    similars = find_similar(decimal_values[my_random],decimal_values)
+    print(similars)
+    
+    if len(similars) > 1:
+        my_directory = make_directory(os.path.join(output_directory,str(my_random)))
+        for similar in similars:
+            src = os.path.join(sys.argv[1],similar)
+            print(src)
+            dst = os.path.join(my_directory,similar)
+            shutil.copyfile(src,dst)
+        
+

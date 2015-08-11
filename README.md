@@ -37,11 +37,11 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 	* don't spend too much time on file_import.py
 	* a statistics function that appends to output/statistics_date_time.txt
 		* might be best done in main.py
-	* add plain text export
 
 * text import
 	* plain text export
 	* check file_import
+	* idea: have a script that automatically maintains up-to-date PubMed dump
 	
 * text processing
 	* add export functions (json, plain text)
