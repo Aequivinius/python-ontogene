@@ -38,7 +38,7 @@ class Text_processing(object):
 	
 	# to return two values doesn't make sense at all. so I'd rather have two functions, the first one returns tokens per sentences, and a flattify function	
 	def tokenize_words(self, text):
-		"""Returns a list of tokenizes sentences, which in turn are a list of token tuples. Use flatify() to get a flat list of tokens.
+		"""Returns a list of tokenized sentences, which in turn are a list of token tuples. Use flatify() to get a flat list of tokens.
 		Token tuples: [0] token text, [1] begin position, [2] end position, [3] sentence number"""
 		sentences = self.tokenize_sentences(text)
 		tokens_per_sentence = list()
