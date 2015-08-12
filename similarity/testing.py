@@ -18,8 +18,7 @@ output_directory = helpers.make_directory(sys.argv[2])
 changed_files_directory = helpers.make_directory(os.path.join(output_directory,'mutations'))
 simhash_directory = helpers.make_directory(os.path.join(output_directory,'simhashes'))
 nilsimsa_directory = helpers.make_directory(os.path.join(output_directory,'nilsimsa'))
-
-
+distances_directory = helpers.make_directory(os.path.join(output_directory,'distances'))
 
 if len(sys.argv) >= 4:
 	pickle_file = sys.argv[3]
@@ -171,3 +170,64 @@ print("Processed all files with Nilsimsa in " + str(end_nilsimsa - start_nilsims
 # COMPARING CODES
 ## Ideally, get a list of how much was changed
 ## and the distance between the generated codes
+
+# This holds all distances for all files. key is main file, which points to a new dict (file_distances)
+## In that dict file_distances, key will be % changed, which points to a new dict (row_distances)
+### In that dict row_distances, key will be kind of similarity measure, value will be distance to main file
+distances = dict()
+
+### Compare for character mutations
+start_distances = time.time()
+print("Computing distances")
+for original_file_name in original_file_names:
+	main_file_stem = os.path.splitext(os.path.basename(original_file_name))[0]
+	main_file = main_file_stem + "_0_percent_characters_changed.txt"
+	file_distances = dict()
+	
+	for i in range(percent_to_change):
+		my_file_name_characters = main_file_stem + "_" + str(i) + "_percent_characters_changed.txt"
+		my_file_name_tokens = main_file_stem + "_" + str(i) + "_percent_tokens_changed.txt"
+		
+		row_distances = dict()
+		
+		row_distances['nilsimsa_characters'] = n.compare_digests(nilsimsas[main_file],nilsimsas[my_file_name_characters],is_hex_1=True,is_hex_2=True)
+		row_distances['simhash_8_characters'] = simhashes[8][main_file].similarity(simhashes[8][my_file_name_characters])
+		row_distances['simhash_64_characters'] = simhashes[64][main_file].similarity(simhashes[64][my_file_name_characters])
+		row_distances['simhash_256_characters'] = simhashes[256][main_file].similarity(simhashes[256][my_file_name_characters])
+		
+		row_distances['nilsimsa_tokens'] = n.compare_digests(nilsimsas[main_file],nilsimsas[my_file_name_tokens],is_hex_1=True,is_hex_2=True)
+		row_distances['simhash_8_tokens'] = simhashes[8][main_file].similarity(simhashes[8][my_file_name_tokens])
+		row_distances['simhash_64_tokens'] = simhashes[64][main_file].similarity(simhashes[64][my_file_name_tokens])
+		row_distances['simhash_256_tokens'] = simhashes[256][main_file].similarity(simhashes[256][my_file_name_tokens])
+		
+		file_distances[i] = row_distances
+
+	distances[main_file_stem] = file_distances
+
+end_distances = time.time()
+print("Computed distances in " + str(end_distances - start_distances) + " seconds.")
+
+### Print to file
+for file_name , file_distance in distances.items():
+	
+	with open(os.path.join(distances_directory,file_name),'w') as f:
+	 writer = csv.writer(f,delimiter='\t')
+	 writer.writerow(['percent_changed',
+	 				  'nilsimsa_characters',
+	 				  'simhash_8_characters',
+	 				  'simhash_64_characters',
+	 				  'simhash_256_characters',
+	 				  'nilsimsa_tokens',
+	 				  'simhash_8_tokens',
+	 				  'simhash_64_tokens',
+	 				  'simhash_256_tokens'])
+	 				  
+	 for percent , distances in file_distance.items():
+		 writer.writerow([percent ,	distances['nilsimsa_characters'],
+								   	distances['simhash_8_characters'],
+									distances['simhash_64_characters'],
+									distances['simhash_256_characters'],
+									distances['nilsimsa_tokens'],
+									distances['simhash_8_tokens'],
+									distances['simhash_64_tokens'],
+									distances['simhash_256_tokens'] ])
