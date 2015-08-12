@@ -12,6 +12,12 @@ import random
 import time
 import csv
 
+import nilsimsa as n
+import nltk
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'hashes'))
+from hashes import simhash as s
+
 # PROCESS ARGUMENTS
 input_directory = sys.argv[1]
 output_directory = helpers.make_directory(sys.argv[2])
@@ -19,6 +25,9 @@ changed_files_directory = helpers.make_directory(os.path.join(output_directory,'
 simhash_directory = helpers.make_directory(os.path.join(output_directory,'simhashes'))
 nilsimsa_directory = helpers.make_directory(os.path.join(output_directory,'nilsimsa'))
 distances_directory = helpers.make_directory(os.path.join(output_directory,'distances'))
+
+nilsimsas = dict()
+simhashes = dict()
 
 if len(sys.argv) >= 4:
 	pickle_file = sys.argv[3]
@@ -75,8 +84,6 @@ def generate_test_files():
 	print("Changed characters and wrote " + str(len(original_articles)) + " articles in " + str(end_characters - start_characters) + " seconds")
 	
 	### In the other case, replace tokens by other entities and write
-	import nltk
-	
 	start_tokens = time.time()
 	id_counter = 0
 	terms = helpers.load_termlist_from_pickle(pickle_file)
@@ -106,6 +113,8 @@ def generate_test_files():
 	end_tokens = time.time()
 	print("Changed tokens and wrote " + str(len(original_articles)) + " articles in " + str(end_tokens - start_tokens) + " seconds")
 	
+generate_test_files()
+	
 # GENERATING CODES
 mutated_file_names = [ f for f in os.listdir(changed_files_directory) if os.path.isfile(os.path.join(changed_files_directory,f)) ]
 mutated_files = [ os.path.join(changed_files_directory,f) for f in mutated_file_names ]
@@ -117,12 +126,9 @@ for mutated_file in mutated_files:
 
 ## Starting with simhash
 ### Possibly want with different lengths
-def simhashes():
-	sys.path.append(os.path.join(os.path.dirname(__file__), 'hashes'))
-	from hashes import simhash as s
+def compute_simhashes():
 	
 	hashbit_lengths = [ 8 , 64 , 256 ]
-	simhashes = dict()
 	
 	for hashbit_length in hashbit_lengths:
 	    my_simhashes = dict()
@@ -144,28 +150,30 @@ def simhashes():
 	    simhashes[hashbit_length] = my_simhashes	
 	    end_simhash = time.time()
 	    print("Processed all files with Simhash and hash length of " + str(hashbit_length) + " in " + str(end_simhash - start_simhash) + " seconds")
+	    
+compute_simhashes()
 		
 ## Nilsimsa
-import nilsimsa as n
-
-nilsimsas = dict()
-article_counter = 0
-
-start_nilsimsa = time.time()
-print("Processing " + str(len(mutated_articles)) + " mutated articles with Nilsimsa")
-for article in mutated_articles:
-	nilsimsas[mutated_file_names[article_counter]] = n.Nilsimsa(article).hexdigest()
+def compute_nilsimsas():
 	
-	article_counter += 1
-
-with open(os.path.join(nilsimsa_directory,'nilsimsas.txt'),'w') as f:
-	writer = csv.writer(f,delimiter='\t')
-	for my_file_name , my_nilsimsa in nilsimsas.items():
-		writer.writerow([my_file_name , my_nilsimsa])
+	article_counter = 0
+	
+	start_nilsimsa = time.time()
+	print("Processing " + str(len(mutated_articles)) + " mutated articles with Nilsimsa")
+	for article in mutated_articles:
+		nilsimsas[mutated_file_names[article_counter]] = n.Nilsimsa(article).hexdigest()
 		
-end_nilsimsa = time.time()
-print("Processed all files with Nilsimsa in " + str(end_nilsimsa - start_nilsimsa) + " seconds")
+		article_counter += 1
+	
+	with open(os.path.join(nilsimsa_directory,'nilsimsas.txt'),'w') as f:
+		writer = csv.writer(f,delimiter='\t')
+		for my_file_name , my_nilsimsa in nilsimsas.items():
+			writer.writerow([my_file_name , my_nilsimsa])
+			
+	end_nilsimsa = time.time()
+	print("Processed all files with Nilsimsa in " + str(end_nilsimsa - start_nilsimsa) + " seconds")
 
+compute_nilsimsas()
 
 # COMPARING CODES
 ## Ideally, get a list of how much was changed
@@ -190,12 +198,12 @@ for original_file_name in original_file_names:
 		
 		row_distances = dict()
 		
-		row_distances['nilsimsa_characters'] = n.compare_digests(nilsimsas[main_file],nilsimsas[my_file_name_characters],is_hex_1=True,is_hex_2=True)
+		row_distances['nilsimsa_characters'] = (n.compare_digests(nilsimsas[main_file],nilsimsas[my_file_name_characters],is_hex_1=True,is_hex_2=True)+128)/256
 		row_distances['simhash_8_characters'] = simhashes[8][main_file].similarity(simhashes[8][my_file_name_characters])
 		row_distances['simhash_64_characters'] = simhashes[64][main_file].similarity(simhashes[64][my_file_name_characters])
 		row_distances['simhash_256_characters'] = simhashes[256][main_file].similarity(simhashes[256][my_file_name_characters])
 		
-		row_distances['nilsimsa_tokens'] = n.compare_digests(nilsimsas[main_file],nilsimsas[my_file_name_tokens],is_hex_1=True,is_hex_2=True)
+		row_distances['nilsimsa_tokens'] = (n.compare_digests(nilsimsas[main_file],nilsimsas[my_file_name_tokens],is_hex_1=True,is_hex_2=True)+128)/256
 		row_distances['simhash_8_tokens'] = simhashes[8][main_file].similarity(simhashes[8][my_file_name_tokens])
 		row_distances['simhash_64_tokens'] = simhashes[64][main_file].similarity(simhashes[64][my_file_name_tokens])
 		row_distances['simhash_256_tokens'] = simhashes[256][main_file].similarity(simhashes[256][my_file_name_tokens])
@@ -210,7 +218,7 @@ print("Computed distances in " + str(end_distances - start_distances) + " second
 ### Print to file
 for file_name , file_distance in distances.items():
 	
-	with open(os.path.join(distances_directory,file_name),'w') as f:
+	with open(os.path.join(distances_directory,file_name + '.txt'),'w') as f:
 	 writer = csv.writer(f,delimiter='\t')
 	 writer.writerow(['percent_changed',
 	 				  'nilsimsa_characters',

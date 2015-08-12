@@ -87,27 +87,3 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
-Oki, we're still at testing, unfortunately, and today I only have 3h. so I can't do japan today, but 2h for the plots, then 1h for a first script?
-
-the plots, I left off here:
-i can generate mutations, and the codes for them.
-
-now I need a good way to compare them.
-what I want is:
-for every main file:
-degree of permutation - distance in simhash 8 64 256 - distance in nilsimsa
-
-since the values are stored in dicts, I can do that quite easily.
-
-I can't test it well on the laptop... write as far as I can here, then do report, then wake mimi and drink tea
-
-files look like:
-name sans ext _ 45 _ percent _ tokens / characters _ changed.txt
-
-now we want to find the values for all the permutations
-
-do I want:
-Main file - distance to simhash chars - distance to nilsimsa chars
-1% changed - distance to sim char - nil char - sim tok - sim 
-
-yepp
