@@ -17,11 +17,18 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'hashes'))
 from hashes import simhash as s
    
 # IMPORTANT VARS
-hashlengths = [ 8 , 64 ]
+# hashlengths = [ 8 , 64 ]
+hashlengths = [8, 16, 24, 32, 40, 48, 56, 64]
 
 # ARGUMENTS PROCESSING
 files = list()
 file_mode = False # used when processing just a single file instead of folder
+
+def writehashkey(text,length):
+    # g.write(str(int(s.simhash(text,length)))  + '\n')
+    form="%%0%dX\n" % (length // 4)
+    out=form % int(s.simhash(text,length))
+    g.write(out)
 
 if os.path.exists(sys.argv[1]):
 	if os.path.isfile(sys.argv[1]) :
@@ -55,8 +62,7 @@ if file_mode: # placed outside of loop to speed up processing of big directories
 	
 	with open(sys.argv[2],'w') as g:
 		for hashlength in hashlengths:
-			g.write(str(int(s.simhash(my_text,hashlength))) + '\n')
-			
+			writehashkey(my_text,hashlength)
 	end_time = time.time()
 
 else:
@@ -66,8 +72,7 @@ else:
 		
 		with open(os.path.join(sys.argv[2],os.path.basename(my_file)),'w') as g:
 			for hashlength in hashlengths:
-				g.write(str(int(s.simhash(my_text,hashlength))) + '\n')
-				
+				writehashkey(my_text,hashlength)
 	end_time = time.time()
 
 print("Processed " + str(len(files)) + "files in " + str(end_time - start_time))	
