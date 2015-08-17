@@ -77,6 +77,7 @@ def write_decimal_key(file_handle,simhash):
 	file_handle.write(str(int(simhash))  + '\n')
 
 def write_hex_key(file_handle,simhash,length):
+	# will print keys reversedly for better sorting
 	form="%%0%dX\n" % (length // 4)
 	out=form % int(simhash)
 	file_handle.write(out[::-1])
