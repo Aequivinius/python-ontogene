@@ -87,3 +87,4 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
+Till Friday, rewrite modules with Tilia's article class, and add BioC export if necessary. Upload them to the shared git.
