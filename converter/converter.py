@@ -53,8 +53,8 @@ def process_arguments():
 	return file_mode , files , output_file , arguments.debug
 
 def process_row(xml_object,row):
-	for i in range(len(elements[row[0]]))[1:]:
-		xml_object.set(elements[row[0]][i],row[i])
+	for i in range(len(elements[row[0]])):
+		xml_object.set(elements[row[0]][i],row[i+1])
 
 def parse_file_etree(input):
 	
