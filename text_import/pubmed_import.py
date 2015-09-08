@@ -49,6 +49,7 @@ def Pubmed_import(pmid, pubmed_email=None, dump_directory_absolute=None, options
 			return None
 				
 	article = biopython_to_article(pmid,record)
+	print()
 	return article	
 
 def download_biopython(pmid, pubmed_email, options=None, args=None):
@@ -74,8 +75,7 @@ def biopython_to_article(pmid,record):
 	article = Article(pmid)
 	article.add_section('title', get_title(record))
 	article.add_section('abstract',get_abstract(record))
-	
-	# i think here's were the interesting bit starts
+	return article
 
 def get_abstract(record):
 	try:
