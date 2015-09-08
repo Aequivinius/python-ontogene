@@ -29,16 +29,20 @@ from text_processing.text_processing import Text_processing as tp
 my_tp = tp(word_tokenizer=my_config.word_tokenizer_object,
            sentence_tokenizer=my_config.sentence_tokenizer_object)
 
+
 tokens = dict()
 for pmid, pubmed_article in pubmed_articles.items	():
+	pubmed_article.tokenise()
 	
+	# # 
+	# if pubmed_article
 	# 
-	if pubmed_article
-	
-    my_tokens = my_tp.tokenize_words(pubmed_article.get_whole_abstract_minus_mesh())
-    tokens[pmid] = my_tokens
-    my_tp.export_tokens_to_xml(pmid, my_tokens, my_config.output_directory_absolute)
-
+	# my_tokens = my_tp.tokenize_words(pubmed_article.get_whole_abstract_minus_mesh())
+	# tokens[pmid] = my_tokens
+	# my_tp.export_tokens_to_xml(pmid, my_tokens, my_config.output_directory_absolute)
+	# 
+import sys
+sys.exit()
 
 # STAGE 3: entity recognition
 # How to use: first create an object Entity_recognition, which takes as an argument a list of NEs to be found.

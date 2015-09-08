@@ -70,12 +70,11 @@ def pickle_biopython(record,dump_file):
 		# TODO: find out why it only works when I use protocol=1
 		pickle.dump(record,f,protocol=1)
 
-def biopython_to_article(pmid,record):
-	data = record[0]
-	
+def biopython_to_article(pmid,record):	
 	article = Article(pmid)
 	article.add_section('title', get_title(record))
 	article.add_section('abstract',get_abstract(record))
+	
 	# i think here's were the interesting bit starts
 
 def get_abstract(record):

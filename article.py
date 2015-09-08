@@ -7,22 +7,27 @@
    which have Sections
    which have Sentences
    which have Terms and Tokens"""
+   
+class Unit(object):
+	"""Abstract unit for storing tokens, sentences, sections"""
+	
+	def __init__(self,id_):
+		self.subelements = list()
+		self.id_ = id_
+	
+	def tokenise(self,tokeniser=None):
+		for subelement in self.subelements:
+			subelement.tokenise(tokeniser)
 
-class Article(object):
+class Article(Unit):
 	"""Stores an article and various subelements for inter-module passing"""
 	
-	# may or may not have a PMID
-	id_ = None
-	subelements = list()
-	meta = None
-	
-	# add some recursive shit, that finds terms for example?
-	
 	def __init__(self,pmid):
-		id_ = pmid
+		Unit.__init__(self,pmid)
 		
 	def add_section(self,section_type,text):
-		self.subelements.append(Section(section_type,text))
+		id_ = len(self.subelements)
+		self.subelements.append(Section(id_,section_type,text))
 		
 	def xml(self):
 		pass
@@ -33,30 +38,31 @@ class Article(object):
 	def pickle(self):
 		pass
 		
-class Section(object):
+class Section(Unit):
 	"""Can be something like title or abstract"""
 	
-	id_ = None
 	type_ = None
 	text = None
-	subelements = list()
+		
+	def tokenise(self,tokeniser=None):
+		print("hello")
+		
 	
-	def __init__(self,section_type,text):
+	def __init__(self,id_,section_type,text):
 		self.type_ = section_type
 		self.text = text
 		
-class Sentence(object):
-	
-	id_ = None
-	subelements = list()
-	
+		Unit.__init__(self,id_)
+		
+		
+class Sentence(Unit):
+		
 	def __init__(self):
 		pass
 	
-class Token(object):
+class Token(Unit):
 	"""The central unit in this"""
 	
-	id_ = None
 	start = None
 	end = None
 	length = None
@@ -68,9 +74,8 @@ class Token(object):
 	def __init__(self):
 		pass
 		
-class Term(object):
+class Term(Unit):
 	
-	id_ = None
 	type_ = None
 	subelements = list()
 	start = None
