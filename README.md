@@ -11,8 +11,10 @@ STRUCTURE
 =========
 The pipeline has several stages, each of which is its own module. The pipeline is then run from main.py.
 
+0. configuration
+	All paths to various input or output directories, as well as pmids, for example, can be specified in the config/config.py
 1. import
-	This module allows downloading of articles from PubMed via Biopython, or to read them from a file
+	This module allows downloading of articles from PubMed via Biopython, or to read them from a file. Returns an Article
 2. low level text processing
 	This module uses NLTK for tokenisation and PoS tagging of the text.
 3. entity recognition
@@ -34,7 +36,7 @@ The pipeline is currently developed up to stage 3, that is, entity recognition. 
 
 * general
 	* compare to the tsv output of Fabio's pipeline
-	* don't spend too much time on file_import.py
+	* don't spend too much time on file_import.py (but do it!)
 	* a statistics function that appends to output/statistics_date_time.txt
 		* might be best done in main.py
 
@@ -87,4 +89,36 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
-Till Friday, rewrite modules with Tilia's article class, and add BioC export if necessary. Upload them to the shared git.
+Okay, now there was a long time of not doing shit, and I need to figure it out now. 
+
+
+
+
+alrighty, let's get started. the article class doesn't seem toooooo hard, really
+
+
+argh, when rewriting I want to make them fit for being used by the command line, too. but for now just finish the article class and making the existing modules compatible with it (as far as possible, still want to cello etc.)
+
+but now comes the interesting bit -> convert the record into article
+
+
+
+
+
+for laters:
+* make them fit for commandline
+* do pubmed import as a factory, so I only have to deal with dump dir once
+* make clear names for what is being pickled in pubmed_download: it's not .article, it's a entrez / biopython format shit. -> add extensions
+* in the conversion biopython to article, we can keep all the meta-data?
+
+
+
+
+* as for the code, I need to write this article class, and change my modules to work with it. And ideally polish them all, add BioC etc
+	* and also, I should surprise him with a parser, so tomorrow I can ask him to do the other modules and we're good to go
+
+
+* there's the report, which I just need to update with rinaldinis comments. that's no biggie. I should also document my doing of tonight
+
+* and then there is the rest: prolog, sphinx, python book
+* and japan, ofc, for which I should look at the forms.

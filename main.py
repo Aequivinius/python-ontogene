@@ -4,21 +4,22 @@
 # STAGE 0: Load configurations
 from config.config import Configuration
 my_config = Configuration()
+# for testing, you could supply a list of PMIDs in the constructor here
+my_config = Configuration([ 10193204 ])
 
 # STAGE 1A: Import texts from Pubmed
-from text_import.file_import import File_import
 from text_import.pubmed_import import Pubmed_import
 
 pubmed_articles = dict()
 for pmid in my_config.pmids:
 	my_pubmed_article = Pubmed_import(pmid,my_config.pubmed_email)
 	pubmed_articles[pmid] = my_pubmed_article
-	print(my_pubmed_article.get_whole_abstract_minus_mesh(options=None, args=None))
 	
 	# my_pubmed_article.export_json(my_config.output_directory_absolute)
 	# my_pubmed_article.export_xml(my_config.output_directory_absolute)
 		
 # STAGE 1B: Importing from files
+# from text_import.file_import import File_import
 # # my_files = File_import('test_directory',load_complete_file='yes',text_key_xml='abstract')
 
 # STAGE 2: low level text processing: tokenisation, PoS tagging
@@ -30,6 +31,10 @@ my_tp = tp(word_tokenizer=my_config.word_tokenizer_object,
 
 tokens = dict()
 for pmid, pubmed_article in pubmed_articles.items	():
+	
+	# 
+	if pubmed_article
+	
     my_tokens = my_tp.tokenize_words(pubmed_article.get_whole_abstract_minus_mesh())
     tokens[pmid] = my_tokens
     my_tp.export_tokens_to_xml(pmid, my_tokens, my_config.output_directory_absolute)

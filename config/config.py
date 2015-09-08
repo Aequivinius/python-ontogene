@@ -10,8 +10,8 @@ class Configuration(object):
 	# VARIABLES TO BE CHANGED BY THE USER
 	
 	# Where to load PMIDs from for processing
-	# Set pmid_mode to ABSOLUTE or RELATIVE (to main.py) to load from pmid_file
-	# Set it to ID to load user_supplied_pmids, which is a list of strings
+	# Set pmid_mode to ABSOLUTE or RELATIVE (to main.py) to load from pmids from file
+	# Set it to ID to load user_supplied_pmids
 	pmid_mode = 'RELATIVE'
 	pmid_file = 'pmids/test_pmids.txt'
 	user_supplied_pmids = [ ]
@@ -48,11 +48,15 @@ class Configuration(object):
 
 	
 	def __init__(self, user_supplied_pmids=None):
-		"""For fast testing, you can user user_supplied_pmids in constructor with a list of strings, rather than changing config file."""
+		"""For fast testing, you can use user_supplied_pmids in constructor with a list of PMIDs, rather than changing config file."""
 		if user_supplied_pmids:
 			self.pmid_mode = 'ID'
 			self.user_supplied_pmids = user_supplied_pmids
-		
+			
+		# check if pmids are strings
+		if self.pmid_mode == 'ID':
+			self.user_supplied_pmids = [ str(pmid) for pmid in self.user_supplied_pmids ]
+				
 		self.load_pmids()
 		self.make_output_directory()
 		self.create_tokenizer_objects()
@@ -97,8 +101,7 @@ class Configuration(object):
 	
 	def create_tokenizer_objects(self):
 		self.create_word_tokenizer_object()
-		self.create_sentence_tokenizer_object()
-		
+		self.create_sentence_tokenizer_object()	
 	
 	def create_word_tokenizer_object(self):
 		"""Here you can add supported word tokenizers. Note that it must implement the span_tokenize method"""
