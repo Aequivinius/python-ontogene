@@ -18,6 +18,9 @@ class Unit(object):
 	def tokenise(self,tokeniser=None):
 		for subelement in self.subelements:
 			subelement.tokenise(tokeniser)
+			
+	def add_subelement(self,subelement):
+		self.subelements.append(subelement)
 
 class Article(Unit):
 	"""Stores an article and various subelements for inter-module passing"""
@@ -27,7 +30,7 @@ class Article(Unit):
 		
 	def add_section(self,section_type,text):
 		id_ = len(self.subelements)
-		self.subelements.append(Section(id_,section_type,text))
+		self.add_subelement(Section(id_,section_type,text))
 		
 	def xml(self):
 		pass
@@ -44,9 +47,12 @@ class Section(Unit):
 	type_ = None
 	text = None
 		
-	def tokenise(self,tokeniser=None):
-		print("hello")
-		
+	def tokenise(self,tokeniser):
+		sentences = tokeniser.tokenize_sentences(self.text)
+		for sentence in sentences:
+			id_ = len(self.subelements)
+			self.add_subelement(Sentence(id_,sentence,text))
+			
 	
 	def __init__(self,id_,section_type,text):
 		self.type_ = section_type
@@ -57,7 +63,9 @@ class Section(Unit):
 		
 class Sentence(Unit):
 		
-	def __init__(self):
+	def __init__(self,id_,text):
+		
+		
 		pass
 	
 class Token(Unit):

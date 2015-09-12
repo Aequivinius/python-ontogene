@@ -89,6 +89,14 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
+
+alrighty, back to it. somehow, it doesn't get the article object in the main.py
+so the issue must lie in pubmed import to not return something?
+ that was easier than expected.
+ oki, we want tokenisation in the article class.
+
+
+
 Okay, now there was a long time of not doing shit, and I need to figure it out now. 
 
 
