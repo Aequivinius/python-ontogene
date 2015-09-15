@@ -90,6 +90,31 @@ ncolic@gmail.com
 STREAM OF CONSCIOUSNESS
 =======================
 
+
+here we are again. if I don't want to fuck it up completely, I need to get some real work done, and it's gotta happen now and on monday (where I have work... fuck)
+
+* finish article class and rewrite modules to be all sleek an clean
+* include the changes fabio requested
+
+* then we have the rest, like report (but fabio focuses on that!), prolog, python, japan
+
+we're still at this stage where we want tokenization to be in the article class
+in a way that it can be run from console...?
+
+Pubmed import is a factory, so to say, returns article object
+
+
+okay I spend too much time thinking about this, fabio said to put tokenization into article.
+
+to it will be
+
+article = import_module.import(pmid)
+article.tokenize(give tokenizer from config)
+
+and the rest
+
+
+
 alrighty, back to it. somehow, it doesn't get the article object in the main.py
 so the issue must lie in pubmed import to not return something?
  that was easier than expected.

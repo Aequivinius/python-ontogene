@@ -4,6 +4,7 @@
 # STAGE 0: Load configurations
 from config.config import Configuration
 my_config = Configuration()
+
 # for testing, you could supply a list of PMIDs in the constructor here
 my_config = Configuration([ 10193204 ])
 
@@ -24,15 +25,17 @@ for pmid in my_config.pmids:
 
 # STAGE 2: low level text processing: tokenisation, PoS tagging
 # How to use: first create an object Text_processing, which will have the tokenizer as a class variable. Use tokenizer.tokenize_words(text) to tokenize; use tokenizer.pos_tag(tokenized_words) to tag
+
+
+
 from text_processing.text_processing import Text_processing as tp
 
 my_tp = tp(word_tokenizer=my_config.word_tokenizer_object,
            sentence_tokenizer=my_config.sentence_tokenizer_object)
 
-
-tokens = dict()
 for pmid, pubmed_article in pubmed_articles.items	():
-	pubmed_article.tokenise()
+	print(pubmed_article)
+	pubmed_article.tokenize(tokenizer=my_tp)
 	
 	# # 
 	# if pubmed_article
@@ -41,6 +44,7 @@ for pmid, pubmed_article in pubmed_articles.items	():
 	# tokens[pmid] = my_tokens
 	# my_tp.export_tokens_to_xml(pmid, my_tokens, my_config.output_directory_absolute)
 	# 
+	
 import sys
 sys.exit()
 

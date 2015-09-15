@@ -11,13 +11,16 @@
 class Unit(object):
 	"""Abstract unit for storing tokens, sentences, sections"""
 	
+	sublements = None
+	id_ = None
+	
 	def __init__(self,id_):
 		self.subelements = list()
 		self.id_ = id_
 	
-	def tokenise(self,tokeniser=None):
+	def tokenize(self,tokenizer=None):
 		for subelement in self.subelements:
-			subelement.tokenise(tokeniser)
+			subelement.tokenize(tokenizer)
 			
 	def add_subelement(self,subelement):
 		self.subelements.append(subelement)
@@ -27,6 +30,13 @@ class Article(Unit):
 	
 	def __init__(self,pmid):
 		Unit.__init__(self,pmid)
+		
+	def __repr__(self):
+		string = ''
+		for subelement in self.subelements:
+			string += subelement.text + '\n'
+			
+		return string
 		
 	def add_section(self,section_type,text):
 		id_ = len(self.subelements)
@@ -46,13 +56,6 @@ class Section(Unit):
 	
 	type_ = None
 	text = None
-		
-	def tokenise(self,tokeniser):
-		sentences = tokeniser.tokenize_sentences(self.text)
-		for sentence in sentences:
-			id_ = len(self.subelements)
-			self.add_subelement(Sentence(id_,sentence,text))
-			
 	
 	def __init__(self,id_,section_type,text):
 		self.type_ = section_type
@@ -60,13 +63,31 @@ class Section(Unit):
 		
 		Unit.__init__(self,id_)
 		
-		
+	def tokenize(self,tokenizer):
+		sentences = tokenizer.tokenize_sentences(self.text)
+		for sentence in sentences:
+			id_ = len(self.subelements)
+			self.add_subelement(Sentence(id_,sentence))
+			
+			for subelement in self.subelements:
+				subelement.tokenize(tokenizer)
+			
 class Sentence(Unit):
+	
+	text = None
 		
 	def __init__(self,id_,text):
+		self.text = text
 		
+		Unit.__init__(self,id_)
 		
-		pass
+	def tokenize(self,tokenizer):
+		tokens = tokenizer.tokenize_words(self.text)
+		print(tokens)
+		for token in tokens:
+			id_ = len(self.subelements)
+			self.add_subelement(Token(id_,token[0]))
+			# print(token[0])
 	
 class Token(Unit):
 	"""The central unit in this"""
@@ -79,7 +100,7 @@ class Token(Unit):
 	stem = None
 	text = None
 	
-	def __init__(self):
+	def __init__(self,id_,text):
 		pass
 		
 class Term(Unit):
