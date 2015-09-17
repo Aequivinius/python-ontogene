@@ -3,6 +3,9 @@
 
 # Nico Colic, September 2015
 
+import xml.etree.ElementTree as ET
+
+
 """Used for inter-module communication. Stores articles in various stages of processing. Designed to be flexible in regards to hierarchy."""
 """For example, while it is assumed that normally articles have sections, this is not necessary."""
    
@@ -26,7 +29,8 @@ class Unit(object):
 		string = ''
 		for subelement in self.subelements:
 			if hasattr(subelement,'text'):
-				string += subelement.text + '\n'
+				if subelement.text is not None:
+					string += subelement.text + '\n'
 			else:
 				string += subelement.__repr__()
 		
@@ -74,7 +78,6 @@ class Unit(object):
 		
 		print(type(self.subelements[0]),subelement_type)
 		if isinstance(self.subelements[0],subelement_type):
-			print("in here")
 			return self.subelements
 			
 		else:
@@ -82,19 +85,96 @@ class Unit(object):
 				return_subelements.append(subelement.get_subelements(subelement_type))
 				
 		return return_subelements
-			
+
 
 class Article(Unit):
+	
+	mesh = None
+	type_ = None
+	year = None
 		
 	def __init__(self,id_):
 		Unit.__init__(self,id_)
+		
+		self.mesh = list()
 		
 	def add_section(self,section_type,text):
 		id_ = len(self.subelements)
 		self.add_subelement(Section(id_,section_type,text))
 		
+	def set_mesh(self,mesh):
+		"""Expects lists of strings"""
+		self.mesh = mesh
+	
+	def print_xml(self,output_file,pretty_print=None):
+		article = self.xml()
+		
+		# write using etree
+		if not pretty_print:
+			with open(output_file,'wb') as f:
+			    ET.ElementTree(article).write(f,encoding="UTF-8",xml_declaration=True)
+		
+		# Pretty Print
+		if pretty_print:
+			from xml.dom import minidom
+			
+			pretty_article = minidom.parseString(ET.tostring(article, 'utf-8')).toprettyxml(indent="	")
+			with open(output_file,'w') as f:
+			    f.write(pretty_article)
+						
 	def xml(self):
-		pass
+		"""This structure is build recursively, so all subordinate classes implement it, too"""
+		
+		article = ET.Element('article')
+		article.set('id',self.id_)
+		
+		try:
+			article.set('year',self.year)
+		except:
+			pass
+			
+		try:
+			article.set('type',self.type_)
+		except:
+			pass
+		
+		for subelement in self.subelements:
+			subelement.xml(article)
+		
+		return article
+		
+		#             if u'ChemicalList' in pmid_medline:
+		#                 chemicals = ET.SubElement(article,'chemicals')
+		#                 chemicals.set('id','')
+		#                 for chemical in pmid_medline[u'ChemicalList']:
+		#                     c = ET.SubElement(chemicals, 'chemical')
+		#                     c.set('UI',chemical[u'NameOfSubstance'].attributes[u'UI'])
+		#                     c.set('RegistryNumber',chemical[u'RegistryNumber'])
+		#                     c.text = chemical[u'NameOfSubstance']
+		#             
+		#             mesh = ET.SubElement(article,'mesh')
+		#             mesh.set('id','')
+		#             for mesh_element in pmid_medline[u'MeshHeadingList']:
+		#                 m = ET.SubElement(mesh, 'm')
+		#                 m.text = mesh_element[u'DescriptorName']
+		#                 m.set('UI',mesh_element[u'DescriptorName'].attributes[u'UI'])
+		#                 major_topic = mesh_element[u'DescriptorName'].attributes[u'MajorTopicYN']
+		#                 m.set('MajorTopicYN',major_topic)
+		#             
+		#                 qualifier_name = mesh_element[u'QualifierName']
+		#                 if qualifier_name != []:
+		#                     m.set('qualifier_name',qualifier_name[0])
+		#                     m.set('qualifier_name_UI',qualifier_name[0].attributes[u'UI'])
+		#                     qualifier_name_major_topic = qualifier_name[0].attributes[u'MajorTopicYN']
+		#                     if major_topic != qualifier_name_major_topic:
+		#                         m.set('qualifier_name_major_topic',qualifier_name_major_topic)
+		#         
+		#         except LookupError as error:
+		#             print('Tree could not be build, possibly because Pubmed data is in an unexpected format.')
+		#             print(error)
+		#             return
+		#                        
+
 		
 	def bioc(self):
 		pass
@@ -122,7 +202,16 @@ class Section(Unit):
 			
 			for subelement in self.subelements:
 				subelement.tokenize(tokenizer)
-			
+				
+	def xml(self,parent):
+		section = ET.SubElement(parent,'section')
+		section.set('id',str(self.id_))
+		section.set('type',self.type_)
+		section.text = self.text
+		
+		for subelement in self.subelements:
+			subelement.xml(section)
+				
 class Sentence(Unit):
 	
 	text = None
@@ -138,6 +227,9 @@ class Sentence(Unit):
 		for token in tokens:
 			id_ = len(self.subelements)
 			self.add_subelement(Token(id_,token[0]))
+			
+	def xml(self,parent):
+		pass
 	
 class Token(Unit):
 	"""The central unit in this"""
@@ -164,4 +256,23 @@ class Term(Unit):
 	def __init__(self):
 		pass
 	
-	
+
+
+#    
+#     
+#     def export_json(self,output_directory):
+#         import json
+#         
+#         my_directory = self.make_output_subdirectory(output_directory)
+# 
+#         file_name = os.path.join(my_directory, self.pmid + '.json')
+#         with open(file_name,'w') as f:
+#             f.write(	json.dumps(self.text[0], indent=2, separators=(',', ':')))
+#                 
+#     def get_absolute_directory(self,directory):
+#         my_directory = os.path.dirname(os.path.abspath(__file__))
+#         return os.path.join(my_directory, self.dump_directory)
+#         
+#     def make_output_subdirectory(self,output_directory_absolute):
+#         my_directory = os.path.join(output_directory_absolute, 'text_import')
+#         return self.make_directory(my_directory)
