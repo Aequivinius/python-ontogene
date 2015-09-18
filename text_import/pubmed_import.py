@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Nico Colic, July 2015
+# Nico Colic, September 2015
 # Based on code by Tilia Ellendorff
 
 import helpers
@@ -15,7 +15,7 @@ import time
 
 dump_directory = 'dumps'
 
-def Pubmed_import(pmid, pubmed_email=None, dump_directory_absolute=None, options=None, args=None):
+def pubmed_import(pmid, pubmed_email=None, dump_directory_absolute=None, options=None, args=None):
 	"""pubmed_email is used to download, not necessary if you only load previously downloaded files. options and args are for downloading from pubmed. Use dump_directory_absolute to provide your own path to dump_directory, if necessary. 
 	
 	Pubmed will return files in biopython format, which we convert into our article format."""

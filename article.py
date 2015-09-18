@@ -128,15 +128,10 @@ class Article(Unit):
 		article = ET.Element('article')
 		article.set('id',self.id_)
 		
-		try:
+		if self.year != None:
 			article.set('year',self.year)
-		except:
-			pass
-			
-		try:
+		if self.type_ != None:
 			article.set('type',self.type_)
-		except:
-			pass
 		
 		for subelement in self.subelements:
 			subelement.xml(article)
@@ -199,15 +194,17 @@ class Section(Unit):
 		for sentence in sentences:
 			id_ = len(self.subelements)
 			self.add_subelement(Sentence(id_,sentence))
-			
-			for subelement in self.subelements:
-				subelement.tokenize(tokenizer)
+		
+		for subelement in self.subelements:
+			subelement.tokenize(tokenizer)
 				
 	def xml(self,parent):
 		section = ET.SubElement(parent,'section')
 		section.set('id',str(self.id_))
 		section.set('type',self.type_)
-		section.text = self.text
+		
+		if self.subelements == None:
+			section.text = self.text
 		
 		for subelement in self.subelements:
 			subelement.xml(section)
@@ -223,13 +220,20 @@ class Sentence(Unit):
 		
 	def tokenize(self,tokenizer):
 		tokens = tokenizer.tokenize_words(self.text)
-		print(tokens)
+		tokens = tokenizer.flatify(tokens)
 		for token in tokens:
 			id_ = len(self.subelements)
-			self.add_subelement(Token(id_,token[0]))
+			self.add_subelement(Token(id_,token[0],token[1],token[2]))
 			
 	def xml(self,parent):
-		pass
+		sentence = ET.SubElement(parent,'sentence')
+		sentence.set('id',str(self.id_))
+		
+		if self.subelements == None:
+			sentence.text = self.text
+			
+		for subelement in self.subelements:
+			subelement.xml(sentence)
 	
 class Token(Unit):
 	"""The central unit in this"""
@@ -242,9 +246,21 @@ class Token(Unit):
 	stem = None
 	text = None
 	
-	def __init__(self,id_,text):
+	def __init__(self,id_,text,start,end):
+		self.text = text
+		self.start = start
+		self.end = end
+		self.length = end - start
 		Unit.__init__(self,id_)
-		
+	
+	def xml(self,parent):
+		token = ET.SubElement(parent,'token')
+		token.set('id',str(self.id_))
+		token.set('start',str(self.start))
+		token.set('end',str(self.end))
+		token.set('length',str(self.length))
+		token.text = self.text
+				
 class Term(Unit):
 	
 	type_ = None
@@ -268,11 +284,3 @@ class Term(Unit):
 #         file_name = os.path.join(my_directory, self.pmid + '.json')
 #         with open(file_name,'w') as f:
 #             f.write(	json.dumps(self.text[0], indent=2, separators=(',', ':')))
-#                 
-#     def get_absolute_directory(self,directory):
-#         my_directory = os.path.dirname(os.path.abspath(__file__))
-#         return os.path.join(my_directory, self.dump_directory)
-#         
-#     def make_output_subdirectory(self,output_directory_absolute):
-#         my_directory = os.path.join(output_directory_absolute, 'text_import')
-#         return self.make_directory(my_directory)

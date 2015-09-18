@@ -1,77 +1,81 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Nico Colic
+# Nico Colic, September 2015
 
 # Imports abstracts etc. from files in a directory, or from a single file
 # Supports json, xml and txt
-# By default, it will only extract and keep in memory texts, not entire files, for better performance.
 
-from os.path	import join, exists, isfile, split
+from os.path	import join, exists, isfile, split, isdir
 from glob	import glob
 
-from xml.etree import ElementTree as ET
-
 import json
+import xml.etree.ElementTree as ET
 
-class File_import(object):
+from article import Article
+
+"""Loads texts from files in TXT. XML and JSON still need implementing."""
+
+def import_file(path):
+	"""Entry function, which can always be used. Will check if path is file or directory, and call respective functions"""
+	"""Returns a list of Article objects"""	
 	
-	def __init__(self, path, text_key_json='text', text_key_xml='text', load_complete_file=None):
-		self.path = path
-		self.text_key_json = text_key_json
-		self.text_key_xml = text_key_xml
+	if isfile(path) :
+		if path[-5:] == '.json' or path[-4:] == '.xml' or path[-4:] == '.txt' :
+			return [ file_import(path) ]
+	
+	elif isdir(path) :
+		return directory_import(path)
 		
-		self.files = []
-		self.jsons = {}
-		self.xmls  = {}
-		self.texts = {}
+	else:
+		print('File or directory does not exist') 
+	
+def directory_import(path):
+	
+	# add supported files in directory
+	files = list()
+	files.extend(glob(join(path,'*.json')))
+	files.extend(glob(join(path,'*.xml')))
+	files.extend(glob(join(path,'*.txt')))
+	
+	# try or something
+	if len(files) == 0:
+		print('No matching files found. Supported formats are XML, JSON, TXT')
+		return None
+	
+	articles = list()
+	
+	for file_ in files:
+		articles.append(file_import(file_))
 		
-		if not exists(path) :
-			raise IOError('File or directory does not exist')
-		
-		if isfile(path) :
-			if path[-5:] == '.json' or path[-4:] == '.xml' or path[-4:] == '.txt' :
-				self.files.append(path)
-		
-		else :
-			# add all supported files in directory
-			self.files.extend(glob(join(path,'*.json')))
-			self.files.extend(glob(join(path,'*.xml')))
-			self.files.extend(glob(join(path,'*.txt')))
-						
-		if not self.files :
-			raise IOError('No matching files found. Supported formats are XML, JSON, TXT')
-				
-		for my_file in self.files :
-			my_file_name = split(my_file)[-1]
+	return articles
+
+def file_import(path):
+	"""Returns an Article object. Will set Article id_ to file_name"""
+	
+	file_name = split(path)[-1]
+	with open(path) as f:
+		if file_name[-5:] == '.json':
+			article = json_to_article(f,file_name)
 			
-			with open ( my_file ) as my_opened_file :
-				
-				if my_file_name[-5:] == '.json':
-					self.extract_json(my_opened_file,my_file_name,text_key_json,load_complete_file)
-					
-				if my_file_name[-4:] == '.xml':
-					self.extract_xml(my_opened_file,my_file_name,text_key_xml,load_complete_file)
-					
-				if my_file_name[-4:] == '.txt':
-					self.extract_txt(my_opened_file,my_file_name)
-									
-	def extract_json(self,my_file,my_file_name,key,load_complete_file):
-		my_json = json.load ( my_file )
-		self.texts[my_file_name] = my_json[key]
-		
-		if load_complete_file:
-			self.jsons[my_file_name] = my_json
+		if file_name[-4:] == '.xml':
+			article = xml_to_article(f,file_name)
+			
+		if file_name[-4:] == '.txt':
+			article = txt_to_article(f,file_name)
+			
+	return article
+
+def json_to_article(file_,file_name):
+	"""Not yet implemented"""
+	pass
 	
-	def extract_xml(self,file,my_file_name,key,load_complete_file):
-		my_xml = ET.parse(my_file_name)
-		my_root = my_xml.getroot()
-		my_text = my_root.find(key).text
-		self.texts[my_file_name] = my_text
-		
-		if load_complete_file:
-			self.xmls[my_file_name] = my_xml
-		
-	def extract_txt(self,file,my_file_name):
-		my_text = file.read().strip('\n')
-		self.texts[my_file_name] = my_text
+def xml_to_article(file_,file_name):
+	"""Not yet implemented"""
+
+	
+def txt_to_article(file_,file_name):
+	text = file_.read().strip('\n')
+	article = Article(file_name.split('.')[0])
+	article.add_section('', text)
+	return article
