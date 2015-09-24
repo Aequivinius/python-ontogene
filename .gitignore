@@ -2,6 +2,7 @@
 entity_recognition/termlists/ontogene_terms_C_D_F03.tsv
 */__pycache__/
 */__pycache__/*
+/__pychache__
 output/*
 output
 text_import/dumps/*

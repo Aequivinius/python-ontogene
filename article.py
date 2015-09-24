@@ -20,13 +20,15 @@ class Unit(object):
 		
 		# having two lists allows to preserve order
 		self.subelements = list()
-		self.subelements_ids = list()
 		self.id_ = id_
 	
 	# Used so you can print(my_article), for example
 	# Useful for testing (but use xml() etc for true outputting)
 	def __repr__(self):
 		string = ''
+		if self.subelements == None or len(self.subelements) == 0:
+			return self.text
+		
 		for subelement in self.subelements:
 			if hasattr(subelement,'text'):
 				if subelement.text is not None:
@@ -41,7 +43,7 @@ class Unit(object):
 	# Just calls tokenize() in all subelements
 	# The classes that actually tokenize overwrite this function
 	# This allows for a flexible hierarchy
-	# Note that it is expected that the no class of the article module actually tokenizes, 
+	# Note that no class actually tokenizes
 	# rather they will call a tokenize()-function on the tokenizer object
 	def tokenize(self,tokenizer):
 		for subelement in self.subelements:
@@ -57,19 +59,16 @@ class Unit(object):
 		
 		# if id_ in subelement is set, we use it
 		# otherwise we create a new id_
-		try:
-			self.subelements_ids.append(subelement.id_)
-		except AttributeError:
+		if not subelement.id_:
 			# subelement has not yet been added to the subelements list
 			generated_id = len(self.subelements)
-			self.subelements_ids.append(generated_id)
 			subelement.id_ = generated_id
 			
 		self.subelements.append(subelement)
 		
-	# returns a list of subelements of the supplied type without knowing the hierarchy
-	# example use: my_article.get_sublements(article.Token) from outside, or get.subelements(Token) from inside
 	def get_subelements(self,subelement_type):
+		"""returns a list of subelements of the supplied type without knowing the hierarchy"""
+		"""example use: my_article.get_sublements(article.Token) from outside, or get.subelements(Token) from within the class"""
 		
 		return_subelements = list()
 		
@@ -84,6 +83,9 @@ class Unit(object):
 				return_subelements.extend(subelement.get_subelements(subelement_type))
 		return return_subelements
 
+###################################
+# actual classes begin here #######
+###################################
 
 class Article(Unit):
 	
@@ -95,6 +97,7 @@ class Article(Unit):
 		Unit.__init__(self,id_)
 		
 		self.mesh = list()
+		self.entities = list()
 		
 	def add_section(self,section_type,text):
 		id_ = len(self.subelements)
@@ -136,62 +139,58 @@ class Article(Unit):
 		
 		return article
 		
-		#             if u'ChemicalList' in pmid_medline:
-		#                 chemicals = ET.SubElement(article,'chemicals')
-		#                 chemicals.set('id','')
-		#                 for chemical in pmid_medline[u'ChemicalList']:
-		#                     c = ET.SubElement(chemicals, 'chemical')
-		#                     c.set('UI',chemical[u'NameOfSubstance'].attributes[u'UI'])
-		#                     c.set('RegistryNumber',chemical[u'RegistryNumber'])
-		#                     c.text = chemical[u'NameOfSubstance']
-		#             
-		#             mesh = ET.SubElement(article,'mesh')
-		#             mesh.set('id','')
-		#             for mesh_element in pmid_medline[u'MeshHeadingList']:
-		#                 m = ET.SubElement(mesh, 'm')
-		#                 m.text = mesh_element[u'DescriptorName']
-		#                 m.set('UI',mesh_element[u'DescriptorName'].attributes[u'UI'])
-		#                 major_topic = mesh_element[u'DescriptorName'].attributes[u'MajorTopicYN']
-		#                 m.set('MajorTopicYN',major_topic)
-		#             
-		#                 qualifier_name = mesh_element[u'QualifierName']
-		#                 if qualifier_name != []:
-		#                     m.set('qualifier_name',qualifier_name[0])
-		#                     m.set('qualifier_name_UI',qualifier_name[0].attributes[u'UI'])
-		#                     qualifier_name_major_topic = qualifier_name[0].attributes[u'MajorTopicYN']
-		#                     if major_topic != qualifier_name_major_topic:
-		#                         m.set('qualifier_name_major_topic',qualifier_name_major_topic)
-		#         
-		#         except LookupError as error:
-		#             print('Tree could not be build, possibly because Pubmed data is in an unexpected format.')
-		#             print(error)
-		#             return
-		#                        
-
-		
 	def bioc(self):
 		pass
+		
+	def json(self):
+		pass
+		
+		
+		#     def export_json(self,output_directory):
+		#         import json
+		#         
+		#         my_directory = self.make_output_subdirectory(output_directory)
+		# 
+		#         file_name = os.path.join(my_directory, self.pmid + '.json')
+		#         with open(file_name,'w') as f:
+		#             f.write(	json.dumps(self.text[0], indent=2, separators=(',', ':')))
 		
 	def pickle(self):
 		pass
 		
-	def recognize_entities(self,entity_recognizer=None):
+	def recognize_entities(self,entity_recognizer):
 		
-		haystack = list()
+		# entity_recognizer.recognize entities() requires sentence tokens
+		haystack = self.get_sentence_tokens()
+		entities = entity_recognizer.recognize_entities(haystack)
+		print(entities)
+		for entity in entities:
+			my_entity = Entity(	id_= len(self.entities) ,
+								text = ' '.join(entity[0]),
+								text_tokens = entity[0],
+								start=entity[1],
+								end=entity[2],
+								type_=entity[3],
+								prefered_form=entity[4],
+								origin_db=entity[5],
+								origin_id=entity[6] )
+			
+			self.entities.append(my_entity)
+	
+	def get_sentence_tokens(self):
+		"""Returns a list of sentences, each of which is a list of tokens in the following format:
+		   (word, start position, end position)"""
+		return_list = list()
 		sentences = self.get_subelements(Sentence)
 		for sentence in sentences:
 			sentence_tokens = list()
 			tokens = sentence.get_subelements(Token)
 			for token in tokens:
-
 				sentence_tokens.append(token.get_tuple())
-		haystack.append(sentence_tokens)
-		
-		# make a list of sentences of lists of tokens with word, start, end
-		
-		entities = entity_recognizer.recognize_entities(haystack)
-		print(entities)
-		
+			return_list.append(sentence_tokens)
+		return return_list
+
+	
 class Section(Unit):
 	"""Can be something like title or abstract"""
 	
@@ -234,7 +233,7 @@ class Sentence(Unit):
 		Unit.__init__(self,id_)
 		
 	def tokenize(self,tokenizer):
-		tokens = tokenizer.tokenize_words(self.text)
+		tokens = tokenizer.span_tokenize_words(self.text)
 		tokens = tokenizer.flatify(tokens)
 		for token in tokens:
 			id_ = len(self.subelements)
@@ -279,26 +278,35 @@ class Token(Unit):
 	def get_tuple(self):
 		return (self.text, self.start, self.end)
 				
-class Term(Unit):
+class Entity(Unit):
 	
 	type_ = None
-	subelements = list()
 	start = None
 	end = None
 	length = None
+	text = None
 	
-	def __init__(self):
-		pass
-	
-
-
-#    
-#     
-#     def export_json(self,output_directory):
-#         import json
-#         
-#         my_directory = self.make_output_subdirectory(output_directory)
-# 
-#         file_name = os.path.join(my_directory, self.pmid + '.json')
-#         with open(file_name,'w') as f:
-#             f.write(	json.dumps(self.text[0], indent=2, separators=(',', ':')))
+	def __init__(self,	id_,
+						start,
+						end,
+						text=None,
+						text_tokens=None,
+						type_=None,
+						prefered_form=None,
+						origin_db=None,
+						origin_id=None ):
+		
+		self.subelements = text_tokens
+		self.text_tokens = text_tokens
+		self.type_ = type_
+		self.start = start
+		self.end = end
+		self.origin_db = origin_db
+		self.origin_id= origin_id
+		self.prefered_form=prefered_form
+		self.text = text
+		
+		if not text and text_tokens:
+			self.text = ' '.join(text_tokens)
+		
+		Unit.__init__(self,id_)

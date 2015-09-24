@@ -35,9 +35,8 @@ class Text_processing(object):
 
 	def tokenize_sentences(self, text):
 		return self.sentence_tokenizer.tokenize(text)
-	
-	# to return two values doesn't make sense at all. so I'd rather have two functions, the first one returns tokens per sentences, and a flattify function	
-	def tokenize_words(self, text):
+
+	def span_tokenize_words(self, text):
 		"""Returns a list of tokenized sentences, which in turn are a list of token tuples. Use flatify() to get a flat list of tokens.
 		Token tuples: [0] token text, [1] begin position, [2] end position, [3] sentence number"""
 		sentences = self.tokenize_sentences(text)
@@ -60,6 +59,9 @@ class Text_processing(object):
 			sentence_offset = sentence_offset + len(sentence) + 1
 		
 		return tokens_per_sentence
+	
+	def tokenize_words(self,text):
+		return self.word_tokenizer.tokenize(text)
 	
 	def flatify(self, tokens_per_sentence):
 		tokens = list()

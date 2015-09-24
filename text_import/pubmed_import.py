@@ -92,6 +92,38 @@ def biopython_to_article(pmid,record):
 		pass
 	
 	return article
+	
+	
+	#             if u'ChemicalList' in pmid_medline:
+	#                 chemicals = ET.SubElement(article,'chemicals')
+	#                 chemicals.set('id','')
+	#                 for chemical in pmid_medline[u'ChemicalList']:
+	#                     c = ET.SubElement(chemicals, 'chemical')
+	#                     c.set('UI',chemical[u'NameOfSubstance'].attributes[u'UI'])
+	#                     c.set('RegistryNumber',chemical[u'RegistryNumber'])
+	#                     c.text = chemical[u'NameOfSubstance']
+	#             
+	#             mesh = ET.SubElement(article,'mesh')
+	#             mesh.set('id','')
+	#             for mesh_element in pmid_medline[u'MeshHeadingList']:
+	#                 m = ET.SubElement(mesh, 'm')
+	#                 m.text = mesh_element[u'DescriptorName']
+	#                 m.set('UI',mesh_element[u'DescriptorName'].attributes[u'UI'])
+	#                 major_topic = mesh_element[u'DescriptorName'].attributes[u'MajorTopicYN']
+	#                 m.set('MajorTopicYN',major_topic)
+	#             
+	#                 qualifier_name = mesh_element[u'QualifierName']
+	#                 if qualifier_name != []:
+	#                     m.set('qualifier_name',qualifier_name[0])
+	#                     m.set('qualifier_name_UI',qualifier_name[0].attributes[u'UI'])
+	#                     qualifier_name_major_topic = qualifier_name[0].attributes[u'MajorTopicYN']
+	#                     if major_topic != qualifier_name_major_topic:
+	#                         m.set('qualifier_name_major_topic',qualifier_name_major_topic)
+	#         
+	#         except LookupError as error:
+	#             print('Tree could not be build, possibly because Pubmed data is in an unexpected format.')
+	#             print(error)
+	#             return
 
 def get_abstracts(record):
 	"""Returns a dictionary with abstracts. Normally this will be 'abstract':'text', but because some articles have multiple abstracts or sections such as 'background'"""

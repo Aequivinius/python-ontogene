@@ -1,14 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Nico Colic, September 2015
+
 import os.path
 import csv
+import datetime
 
 class Configuration(object):
 	"""Stores and processed configuration for the pipeline. The user only needs to change class variables; the rest can be ignored."""
 	
 	# VARIABLES TO BE CHANGED BY THE USER
 	
+	# GENERAL VARIABLES
+	# Set to None for silent mode, set to 'CONSOLE' to print to console, set to 'FILE' to print to file
+	# In that case, it will print to files in output directory
+	verbose = 'FILE'
+	# this folder will be used by all modules as output directory. Again, output_directory_mode can be RELATIVE to main.py or ABSOLUTE
+	output_directory = 'output'
+	output_directory_mode = 'RELATIVE'
+	
+	# VARIABLES RELATED TO LOADING DATA FROM FILE OR PUBMED
 	# Where to load PMIDs from for processing
 	# Set pmid_mode to ABSOLUTE or RELATIVE (to main.py) to load from pmids from file
 	# Set it to ID to load user_supplied_pmids
@@ -19,33 +31,35 @@ class Configuration(object):
 	# this is the email that is used to download from Pubmed.
 	pubmed_email = 'ncolic@gmail.com'
 	
-	# this folder will be used by all modules as output directory. Again, output_directory_mode can be RELATIVE to main.py or ABSOLUTE
-	output_directory = 'output'
-	output_directory_mode = 'RELATIVE'
-
 	# Tokenizers used in text_processing and for entity_recognition
 	#	Currently, word_tokenizer can be WordPunctTokenizer or PunktWordTokenizer
 	#	sentence_tokenizer currently can only be PunktSentenceTokenizer
 	word_tokenizer = 'WordPunctTokenizer'
 	sentence_tokenizer = 'PunktSentenceTokenizer'
 	
+	# VARIABLES RELATED TO ENTITY RECOGNITION
 	# List of entities to be used for entity recognition. 
 	# termlist_mode can be RELATIVE (to main.py) or ABSOLUTE
 	# termlist_format specified number of columns that termlist has. Set to none to detect automatically, this, however, might slow down execution slightly.
 	termlist_file = 'entity_recognition/termlists/ontogene_terms_C_D_F03.tsv'
 	termlist_mode = 'RELATIVE'
 	termlist_format = 6
-
+	
+	# COSMETIC VARIABLES
+	output_verbose_directory_name = 'verbose'
 	
 	# INTERNAL VARIABLES
 	# These will be overwritten by the constructor
 	pmids = list()
 	pmid_file_absolute = None
+	
 	output_directory_absolute = None
+	output_verbose_directory_absolute = None
+	verbose_file = None
+	
 	word_tokenizer_object = None
 	sentence_tokenizer_object = None
 	termlist_file_absolute = None
-
 	
 	def __init__(self, user_supplied_pmids=None):
 		"""For fast testing, you can use user_supplied_pmids in constructor with a list of PMIDs, rather than changing config file."""
@@ -59,13 +73,17 @@ class Configuration(object):
 				
 		self.load_pmids()
 		self.make_output_directory()
+		
+		if self.verbose == 'FILE':
+			self.create_verbose_file_names()
+		
 		self.create_tokenizer_objects()
 		self.set_termlist()
 			
 	
 	def load_pmids(self):
 		if self.pmid_mode == 'RELATIVE' and self.pmid_file:
-			my_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+			my_directory = os.path.dirname(os.path.abspath(__file__))
 			self.pmid_file_absolute = os.path.join(my_directory,self.pmid_file)
 			self.load_pmids_from_file()
 			
@@ -87,7 +105,7 @@ class Configuration(object):
 			 	
 	def make_output_directory(self):
 		if self.output_directory_mode == 'RELATIVE':
-			my_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+			my_directory = os.path.dirname(os.path.abspath(__file__))
 			self.output_directory_absolute = os.path.join(my_directory, self.output_directory)
 		else:
 			self.output_directory_absolute = self.output_directory
@@ -120,7 +138,7 @@ class Configuration(object):
 		
 	def set_termlist(self):
 		if self.termlist_mode == 'RELATIVE' and self.termlist_file:
-			my_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+			my_directory = os.path.dirname(os.path.abspath(__file__))
 			self.termlist_file_absolute = os.path.join(my_directory,self.termlist_file)
 		
 		elif self.termlist_mode == 'ABSOLUTE' and self.termlist_file and os.path.exists(self.termlist_file):
@@ -134,6 +152,19 @@ class Configuration(object):
 				for line in csv.reader(tsv, delimiter="\t"):
 					self.termlist_format = len(line) #this is the first line, then we
 					break
+	
+	def create_verbose_file_names(self):
 		
-	        
+		# verbose subdirectory
+		self.output_verbose_directory_absolute = os.path.join(self.output_directory_absolute , self.output_verbose_directory_name )
+		if not os.path.exists(self.output_verbose_directory_absolute):
+			try:
+				os.makedirs(self.output_verbose_directory_absolute)
+			except():
+				print('Could not create directory ', self.output_verbose_directory_absolute)
+				return None
+		
+		current_date = datetime.datetime.now()
+		verbose_file_name = os.path.join(self.output_verbose_directory_absolute,'run_' + str(current_date.day) + '-' + str(current_date.month ) + '-' + str(current_date.year) + '_' + str(current_date.hour) + '-' + str(current_date.minute) + '-' + str(current_date.second) + '.txt' )
+		self.verbose_file = open(verbose_file_name,'w')	        
 		       

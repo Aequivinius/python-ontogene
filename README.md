@@ -89,3 +89,54 @@ ncolic@gmail.com
 
 STREAM OF CONSCIOUSNESS
 =======================
+
+wieder null übersicht was geht. was wir wollen:
+* die fucking pipeline fertig polieren
+	* article
+		* we left off at ER
+		* bioc export
+		* pickle
+		* json export
+		* unique ids throughout thing
+		
+	* import
+		* add chemicals and meshes
+	
+	* tp
+		* pos tagging
+	
+	* er
+		* compare results to rinaldi
+		* export
+		
+		
+> jepp, in the end wollen wir ein kompaktes, gut dokumentiertes software package.
+let's just start somewhere. ER
+
+yeah, it makes sense to have this as a class.
+
+
+do something about the tokenizer and config interaction. it shouldn't get an object from config, that's just dumb
+
+
+write in documentation that we need a span_tokenize_words() function now. tokenize_words() is the plain one for the dictionary
+
+okay, now I'm at the last step of finishing the er clean-up: make it work with the article class, and 
+write exporters.
+
+then I can setup the test, test and compare (do I still remember how to do that?), and put that in my paper. then volker.
+
+then rewrite the rest and polish polish polish.
+
+
+oki, so er works now well. now we need exporters from the article class, and then we can run it on the server and compare. I think the positions might be off, because I don't take into account the ofsets for the paragraphs.
+
+
+
+
+* rinaldi's paper fertig
+* timing
+* prolog
+* python buch
+* japan
+* master
