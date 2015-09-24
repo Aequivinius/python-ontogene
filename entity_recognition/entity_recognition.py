@@ -102,7 +102,7 @@ class Entity_recognition(object):
 			pickle.dump(terms,file)
 		print('Written terms to pickle at ', filename)
 	
-	def recognise_entities(self,sentences):
+	def recognize_entities(self,sentences):
 		"""Will go through the words and try to match them to the terms"""
 		"""Words is expected in this format: (word, start position, end position)"""
 		"""Returns a list of found entities"""

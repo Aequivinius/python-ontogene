@@ -30,7 +30,7 @@ class Unit(object):
 		for subelement in self.subelements:
 			if hasattr(subelement,'text'):
 				if subelement.text is not None:
-					string += subelement.text + '\n'
+					string += subelement.text + ' '
 			else:
 				string += subelement.__repr__()
 		
@@ -68,22 +68,20 @@ class Unit(object):
 		self.subelements.append(subelement)
 		
 	# returns a list of subelements of the supplied type without knowing the hierarchy
-	# example use: my_article.get_sublements(article.Token)
+	# example use: my_article.get_sublements(article.Token) from outside, or get.subelements(Token) from inside
 	def get_subelements(self,subelement_type):
 		
 		return_subelements = list()
 		
-		if len(self.subelements) == 0:
+		if self.subelements == None or len(self.subelements) == 0:
 			return
 		
-		print(type(self.subelements[0]),subelement_type)
 		if isinstance(self.subelements[0],subelement_type):
 			return self.subelements
 			
 		else:
 			for subelement in self.subelements:
-				return_subelements.append(subelement.get_subelements(subelement_type))
-				
+				return_subelements.extend(subelement.get_subelements(subelement_type))
 		return return_subelements
 
 
@@ -177,6 +175,23 @@ class Article(Unit):
 	def pickle(self):
 		pass
 		
+	def recognize_entities(self,entity_recognizer=None):
+		
+		haystack = list()
+		sentences = self.get_subelements(Sentence)
+		for sentence in sentences:
+			sentence_tokens = list()
+			tokens = sentence.get_subelements(Token)
+			for token in tokens:
+
+				sentence_tokens.append(token.get_tuple())
+		haystack.append(sentence_tokens)
+		
+		# make a list of sentences of lists of tokens with word, start, end
+		
+		entities = entity_recognizer.recognize_entities(haystack)
+		print(entities)
+		
 class Section(Unit):
 	"""Can be something like title or abstract"""
 	
@@ -260,6 +275,9 @@ class Token(Unit):
 		token.set('end',str(self.end))
 		token.set('length',str(self.length))
 		token.text = self.text
+		
+	def get_tuple(self):
+		return (self.text, self.start, self.end)
 				
 class Term(Unit):
 	

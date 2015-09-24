@@ -21,7 +21,7 @@ import article
 
 from text_import.file_import import import_file
 
-articles = import_file('/Users/Qua/Downloads/data/test_directory')
+articles = import_file('/Users/tabris/Downloads/data/test_data')
 
 
 from config.config import Configuration
@@ -35,5 +35,12 @@ sentence_tokenizer=my_config.sentence_tokenizer_object)
 for my_article in articles:
 	my_article.tokenize(tokenizer=my_tp)
 
-	
-my_article.print_xml('/Users/Qua/Downloads/asn.xml', pretty_print=1)
+from config.config import Configuration
+my_config = Configuration()
+
+from entity_recognition.entity_recognition import Entity_recognition as er
+
+my_er = er(my_config.termlist_file_absolute,my_config.termlist_format,my_config.word_tokenizer_object)
+
+for tokenized_article in articles:
+	tokenized_article.recognize_entities()
