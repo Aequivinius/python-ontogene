@@ -4,6 +4,7 @@
 # Nico Colic, September 2015
 
 import xml.etree.ElementTree as ET
+import pickle
 
 
 """Used for inter-module communication. Stores articles in various stages of processing. Designed to be flexible in regards to hierarchy."""
@@ -138,7 +139,7 @@ class Article(Unit):
 			subelement.xml(article)
 		
 		return article
-		
+	
 	def bioc(self):
 		pass
 		
@@ -155,15 +156,21 @@ class Article(Unit):
 		#         with open(file_name,'w') as f:
 		#             f.write(	json.dumps(self.text[0], indent=2, separators=(',', ':')))
 		
-	def pickle(self):
-		pass
+	def pickle(self,output_file):
+		with open(output_file,'wb') as f:
+			pickle.dump(self,f)
+	
+	@classmethod
+	def unpickle(cls, input_file):
+		"""Use as my_article = article.Article.unpickle(path)"""
+		with open(input_file,'rb') as f:
+			return pickle.load(f)
 		
 	def recognize_entities(self,entity_recognizer):
 		
 		# entity_recognizer.recognize entities() requires sentence tokens
 		haystack = self.get_sentence_tokens()
 		entities = entity_recognizer.recognize_entities(haystack)
-		print(entities)
 		for entity in entities:
 			my_entity = Entity(	id_= len(self.entities) ,
 								text = ' '.join(entity[0]),
@@ -176,6 +183,31 @@ class Article(Unit):
 								origin_id=entity[6] )
 			
 			self.entities.append(my_entity)
+	
+	def print_entities_xml(self,output_file,pretty_print=None):
+		entities = self.entities_xml()
+		
+		# write using etree
+		if not pretty_print:
+			with open(output_file,'wb') as f:
+				ET.ElementTree(entities).write(f,encoding="UTF-8",xml_declaration=True)
+		
+		# Pretty Print
+		if pretty_print:
+			from xml.dom import minidom
+			
+			pretty_article = minidom.parseString(ET.tostring(entities, 'utf-8')).toprettyxml(indent="	")
+			with open(output_file,'w') as f:
+				f.write(pretty_article)
+	
+	def entities_xml(self):
+		entities = ET.Element('entities')
+		entities.set('article_id',str(self.id_))
+		
+		for entity in self.entities:
+			entity.xml(entities)
+		
+		return entities
 	
 	def get_sentence_tokens(self):
 		"""Returns a list of sentences, each of which is a list of tokens in the following format:
@@ -310,3 +342,22 @@ class Entity(Unit):
 			self.text = ' '.join(text_tokens)
 		
 		Unit.__init__(self,id_)
+		
+	def xml(self,parent):
+		entity = ET.SubElement(parent,'entity')
+		entity.set('id',str(self.id_))
+		entity.set('type',self.type_)
+		entity.set('start',str(self.start))
+		entity.set('end',str(self.end))
+		entity.set('origin_db',self.origin_db)
+		entity.set('origin_id',str(self.origin_id))
+		entity.set('prefered_form',self.prefered_form)
+		
+		if self.text_tokens:
+			for text_token in self.text_tokens:
+				xml_token = ET.SubElement(entity,'token')
+				xml_token.text = text_token
+		elif self.text:
+			entity.text = self.text
+
+		return entity

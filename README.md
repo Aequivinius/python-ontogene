@@ -132,6 +132,8 @@ then rewrite the rest and polish polish polish.
 oki, so er works now well. now we need exporters from the article class, and then we can run it on the server and compare. I think the positions might be off, because I don't take into account the ofsets for the paragraphs.
 
 
+the text variable of entity is not yet quite nice. it should be 1:1 what is in the text.
+
 
 
 * rinaldi's paper fertig

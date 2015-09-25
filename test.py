@@ -51,3 +51,4 @@ my_er = er(	my_config.termlist_file_absolute,
 
 for tokenized_article in articles:
 	tokenized_article.recognize_entities(my_er)
+	tokenized_article.pickle('/Users/Qua/Downloads/test/' + tokenized_article.id_ + '.pickle')
