@@ -24,7 +24,7 @@ class Configuration(object):
 	# Where to load PMIDs from for processing
 	# Set pmid_mode to ABSOLUTE or RELATIVE (to main.py) to load from pmids from file
 	# Set it to ID to load user_supplied_pmids
-	pmid_mode = 'RELATIVE'
+	pmid_mode = ''
 	pmid_file = 'pmids/test_pmids.txt'
 	user_supplied_pmids = [ ]
 	
@@ -93,10 +93,6 @@ class Configuration(object):
 		
 		elif self.pmid_mode == 'ID' and self.user_supplied_pmids:
 			self.pmids = self.user_supplied_pmids
-			
-		else:
-			print('Make sure you set pmid_mode in config.py correctly')
-			quit()
 	
 	def 	load_pmids_from_file(self):
 		with open(self.pmid_file_absolute,'r') as f:

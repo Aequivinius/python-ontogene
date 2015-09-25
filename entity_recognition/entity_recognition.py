@@ -74,8 +74,8 @@ class Entity_recognition(object):
 			if self.verbose == 'FILE':
 				pass
 		
-		with open(pickle_path,'rb') as file:
-			terms = pickle.load(file)
+		with open(pickle_path,'rb') as f:
+			terms = pickle.load(f)
 			
 		if self.verbose:
 			end = time.time()
@@ -136,8 +136,8 @@ class Entity_recognition(object):
 		if not os.path.exists(os.path.dirname(filename)):
 			os.makedirs(os.path.dirname(filename))
 		
-		with open(filename,'wb') as file:
-			pickle.dump(terms,file)
+		with open(filename,'wb') as f:
+			pickle.dump(terms,f)
 			
 		if self.verbose == 'CONSOLE':
 			print('Written terms to pickle at ', filename)
@@ -211,12 +211,13 @@ class Entity_recognition(object):
 							# else it's a single word NE that was found
 							#                  whole term start         end           type       prefered   origin     internal id  
 							entities.append( ( entry[0] , words[i][1] , words[i][2] , entry[2] , entry[3] , entry[5] , entry[6] ) )
-														
+		
+		# This is extremely verbose, only use for testing												
 		if self.verbose:
 			end = time.time()
-			if self.verbose == 'CONSOLE':
+			if self.verbose == 'VERY_CONSOLE':
 				print('Found ' + str(len(entities)) + ' entities in text in ' + str(end-start) + ' seconds')
-			if self.verbose == 'FILE':
+			if self.verbose == 'VERY_FILE':
 				self.verbose_file.write('Found ' + str(len(entities)) + ' entities in text at ' + str(time.time()) + ' in ' + str(end-start) + ' seconds\n')
 			
 		return entities		

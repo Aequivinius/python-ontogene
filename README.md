@@ -95,7 +95,6 @@ wieder null übersicht was geht. was wir wollen:
 	* article
 		* we left off at ER
 		* bioc export
-		* pickle
 		* json export
 		* unique ids throughout thing
 		
@@ -133,6 +132,17 @@ oki, so er works now well. now we need exporters from the article class, and the
 
 
 the text variable of entity is not yet quite nice. it should be 1:1 what is in the text.
+
+oh great, I can't test it on kitt for now.
+
+so I run it on my compi, and then write report > send to rinaldini + proposal
+then volker
+then japan
+then
+in the meantime, polish more, and then run on kitt as soon as it's ready
+
+
+oki, come on, prep the test
 
 
 
