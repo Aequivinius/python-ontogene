@@ -53,6 +53,4 @@ my_er = er(	my_config.termlist_file_absolute,
 
 for pmid, tokenized_article in pubmed_articles.items():
 	tokenized_article.recognize_entities(my_er)
-	# my_entities = my_er.recognise_entities(sentences=tokenized_text)
-	# my_er.export_tsv_legacy_format(pmid, my_entities, my_config.output_directory_absolute)
-	# entities.extend(my_entities)
+	tokenized_article.print_entities_xml(my_config.output_directory_absolute + '/entities/' + str(pmid) + '.xml')

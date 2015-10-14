@@ -13,7 +13,7 @@ my_config.verbose_file.write('started at ' + str(start)+ '\n')
 		
 # STAGE 1B: Importing from files
 from text_import import file_import
-articles = file_import.import_file('/Users/Qua/Downloads/data/1005')
+articles = file_import.import_file('/Users/Qua/Downloads/data/test_data')
 
 # STAGE 2: low level text processing: tokenisation, PoS tagging
 # How to use: first create an object Text_processing, which will have the tokenizer as a class variable. Use tokenizer.tokenize_words(text) to tokenize; use tokenizer.pos_tag(tokenized_words) to tag
@@ -48,13 +48,15 @@ for article in articles:
 	counter += 1
 	try:
 		article.recognize_entities(my_er)
-		# article.print_entities_xml(my_config.output_directory_absolute + '/entities_' + str(article.id_) + '.xml', pretty_print=True)
-	except:
+		article.print_entities_xml(my_config.output_directory_absolute + '/entities_' + str(article.id_) + '.xml', pretty_print=True)
+		article.export_tsv_legacy_format(my_config.output_directory_absolute + '/entities_' + str(article.id_) + '.tsv')
+	except Exception:
 		my_config.verbose_file.write('couldn\'t ER in ' + str(article.id_)+'\n')
 		
 	if (counter % 1000) == 0:
+		print('processed ' + str(counter) + ' articles')
 		now = time.time()
-		my_config.verbose_file.write('ER in ' + str(counter) + ' articles in ' + str(start_er-now) +' seconds so far\n')
+		my_config.verbose_file.write('ER in ' + str(counter) + ' articles in ' + str(now-start_er) +' seconds so far\n')
 
 end = time.time()
 my_config.verbose_file.write('*******************\n')

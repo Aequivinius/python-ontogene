@@ -167,7 +167,6 @@ class Article(Unit):
 			return pickle.load(f)
 		
 	def recognize_entities(self,entity_recognizer):
-		
 		# entity_recognizer.recognize entities() requires sentence tokens
 		haystack = self.get_sentence_tokens()
 		entities = entity_recognizer.recognize_entities(haystack)
@@ -221,6 +220,17 @@ class Article(Unit):
 				sentence_tokens.append(token.get_tuple())
 			return_list.append(sentence_tokens)
 		return return_list
+		
+	# This is only used to compare output to old pipeline
+	def export_tsv_legacy_format(self, output_file):
+		import csv
+		with open(output_file,'w') as f:
+			writer = csv.writer(f, delimiter='\t')
+			writer.writerow(['DOCUMENT ID', 'TYPE' , 'START POSITION' , 'END POSITION' , 'MATCHED TERM' , 'PREFERED FORM' , 'TERM ID' , 'ORIGIN WITHIN DOCUMENT' , 'SENTENCE'])
+			for entity in self.entities:
+				row = [ self.id_ , entity.type_ , entity.start , entity.end , entity.text , entity.prefered_form , entity.origin_id , 'origin' , 'sentence']
+				
+				writer.writerow(row)
 
 	
 class Section(Unit):
