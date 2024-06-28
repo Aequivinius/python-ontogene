@@ -19,9 +19,3 @@ The pipeline has several stages, each of which is its own module. The pipeline i
 	This module uses NLTK for tokenisation and PoS tagging of the text.
 3. entity recognition
 	This module uses a supplied list of named entities and returns their positions in the text
-
-
-CREDITS
-=======
-Nico Colic
-ncolic@gmail.com
